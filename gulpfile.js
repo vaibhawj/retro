@@ -13,6 +13,7 @@ var gulp = require("gulp"),
   path = require("path"),
   watch = require("gulp-watch"),
   autoprefixer = require("gulp-autoprefixer");
+  var    exec = require('child_process').exec;
 
 gulp.task("express", function() {
   var app = express();
@@ -22,6 +23,10 @@ gulp.task("express", function() {
   app.listen(port, "0.0.0.0", function() {
     console.log("App running and listening on port", port);
   });
+});
+
+gulp.task('server', (cb) => {
+  exec('node app.js', err => err);
 });
 
 var tinylr;
@@ -158,7 +163,7 @@ gulp.task("copy", function() {
   buildHTML();
 });
 
-gulp.task("default", ["bundle", "copy", "express", "livereload", "watch"]);
+gulp.task("default", ["bundle", "copy", "server","express", "livereload", "watch"]);
 gulp.task("test", ["lint", "watch-test"]);
 gulp.task("testci", ["lint", "test-once"]);
 gulp.task("build", ["clean-dist", "bundle", "copy"]);
