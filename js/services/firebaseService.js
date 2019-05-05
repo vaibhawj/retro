@@ -2,37 +2,51 @@
 
 angular
   .module('fireideaz')
-  .service('FirebaseService', ['firebase', '$firebaseArray', '$firebaseObject', function (firebase, $firebaseArray, $firebaseObject) {
+  .service('FirebaseService', ['$feathers','firebase', '$firebaseArray', '$firebaseObject', function ($feathers,firebase, $firebaseArray, $firebaseObject) {
+    var message = $feathers.service('message')
+    var board = $feathers.service('board')
+    message.on('created', function (msg) {
+      console.log(msg)
+    })
+    board.on('created', function (msg) {
+      console.log(msg)
+    })
     function newFirebaseArray(messagesRef) {
       return $firebaseArray(messagesRef);
     }
 
     function getServerTimestamp() {
-      return firebase.database.ServerValue.TIMESTAMP;
+      return new Date().getTime();
+      //return firebase.database.ServerValue.TIMESTAMP;
     }
 
     function getMessagesRef(userId) {
-      return firebase.database().ref('/messages/' + userId);
+      return message.find({query: {userId: userId}});
+      //return firebase.database().ref('/messages/' + userId);
     }
 
     function getMessageRef(userId, messageId) {
-      return firebase.database().ref('/messages/' + userId + '/' + messageId);
+      return message.get({query: {userId: userId,messageId:messageId}});
+      //return firebase.database().ref('/messages/' + userId + '/' + messageId);
     }
 
     function getBoardRef(userId) {
-      return firebase.database().ref('/boards/' + userId);
+      return board.find({query: {userId: userId}});
+      //return firebase.database().ref('/boards/' + userId);
     }
 
     function getBoardObjectRef(userId) {
-      return $firebaseObject(firebase.database().ref('/boards/' + userId));
+      return board.find({query: {userId: userId}});
+      //return $firebaseObject(firebase.database().ref('/boards/' + userId));
     }
 
     function getBoardColumns(userId) {
-      return firebase.database().ref('/boards/' + userId + '/columns');
+      return board.find({query: {userId: userId}});
+      //return firebase.database().ref('/boards/' + userId + '/columns');
     }
 
     return {
-      newFirebaseArray: newFirebaseArray,
+      // newFirebaseArray: newFirebaseArray,
       getServerTimestamp: getServerTimestamp,
       getMessagesRef: getMessagesRef,
       getMessageRef: getMessageRef,

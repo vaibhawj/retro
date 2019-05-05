@@ -53,6 +53,7 @@
     "angularfire": "^2.3.0",
     "clipboard": "^1.7.1",
     "core-js": "^2.4.1",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
     "feathers-nedb": "^4.0.1",
     "font-awesome": "^4.6.1",
