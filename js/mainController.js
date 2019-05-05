@@ -4,27 +4,22 @@
 angular
   .module('fireideaz')
 
-  .controller('MainCtrl', [
-    '$scope',
-    '$filter',
-    '$window',
-    'Utils',
-    'Auth',
-    '$rootScope',
-    'FirebaseService',
-    'ModalService',
-    'FEATURES',
-    function(
-      $scope,
-      $filter,
-      $window,
-      utils,
-      auth,
-      $rootScope,
-      firebaseService,
-      modalService,
-      FEATURES
-    ) {
+  .controller('MainCtrl', ['$scope','$filter','$window','Utils','$rootScope','FirebaseService','ModalService','FEATURES','$feathers',
+    function($scope,$filter,$window,utils,$rootScope,firebaseService,modalService,FEATURES,$feathers) {
+
+      var messageService = $feathers.service('message')
+      var boardService = $feathers.service('board')
+      messageService.on('patched', function (msg) {
+        console.log(msg)
+      })
+      boardService.on('patched', function (board) {
+        if(board._id ==$scope.board._id){
+          $scope.board= board;
+          $scope.$apply();
+        }
+        console.log(board)
+      })
+
       $scope.loading = true;
       $scope.messageTypes = utils.messageTypes;
       $scope.utils = utils;
@@ -33,7 +28,7 @@ angular
         text_editing_is_private: true
       };
       $scope.features = FEATURES;
-      $scope.userId = $window.location.hash.substring(1) || '';
+      // $scope.userId = $window.location.hash.substring(1) || '';
       $scope.searchParams = {};
       $window.location.search
         .substr(1)
@@ -66,41 +61,22 @@ angular
         });
       };
 
-      function getBoardAndMessages(userData) {
-        $scope.userId = $window.location.hash.substring(1) || '499sm';
-
-        var messagesRef = firebaseService.getMessagesRef($scope.userId);
-        var board = firebaseService.getBoardRef($scope.userId);
-
-        $scope.boardObject = firebaseService.getBoardObjectRef($scope.userId);
-
-        board.on('value', function(board) {
-          if (board.val() === null) {
-            window.location.hash = '';
-            location.reload();
-          }
-
-          $scope.board = board.val();
-          $scope.maxVotes = board.val().max_votes ? board.val().max_votes : 6;
-          $scope.boardId = $rootScope.boardId = board.val().boardId;
-          $scope.boardContext = $rootScope.boardContext = board.val().boardContext;
+      function getBoardAndMessages(boardId) {
+        if(boardId){
+          boardService.get($scope.boardId).then(function(board){
+            $scope.board = board;
+            $scope.loading = false;
+            $scope.$apply();
+          }).catch(function(error){
+            if(error){
+              $scope.boardId = undefined;
+              $scope.loading = false;
+              $scope.$apply();
+            }
+          });
+        }else{
           $scope.loading = false;
-          $scope.hideVote = board.val().hide_vote;
-          setTimeout(function() {
-            new EmojiPicker();
-          }, 100);
-        });
-
-        $scope.boardRef = board;
-        $scope.messagesRef = messagesRef;
-        $scope.userUid = userData.uid;
-        $scope.messages = firebaseService.newFirebaseArray(messagesRef);
-      }
-
-      if ($scope.userId !== '') {
-        auth.logUser($scope.userId, getBoardAndMessages);
-      } else {
-        $scope.loading = false;
+        }
       }
 
       $scope.isColumnSelected = function(type) {
@@ -133,12 +109,9 @@ angular
         $scope.messages.$save(message);
       };
 
-      function redirectToBoard() {
-        window.location.href =
-          window.location.origin +
-          window.location.pathname +
-          '#' +
-          $scope.userId;
+      function redirectToBoard(board) {
+        window.location.href = window.location.origin +window.location.pathname +'#' +board._id;
+        $scope.loading = false;
       }
 
       $scope.isBoardNameInvalid = function() {
@@ -152,32 +125,20 @@ angular
       $scope.createNewBoard = function() {
         $scope.loading = true;
         modalService.closeAll();
-        $scope.userId = utils.createUserId();
-
-        var callback = function(userData) {
-          var board = firebaseService.getBoardRef($scope.userId);
-          board.set(
-            {
-              boardId: $scope.newBoard.name,
-              date_created: new Date().toString(),
-              columns: $scope.messageTypes,
-              user_id: userData.uid,
-              max_votes: $scope.newBoard.max_votes || 6,
-              text_editing_is_private: $scope.newBoard.text_editing_is_private
-            },
-            function(error) {
-              if (error) {
-                $scope.loading = false;
-              } else {
-                redirectToBoard();
-              }
-            }
-          );
-
-          $scope.newBoard.name = '';
-        };
-
-        auth.createUserAndLog($scope.userId, callback);
+        boardService.create({
+          boardName: $scope.newBoard.name,
+          date_created: new Date().toString(),
+          columns: $scope.messageTypes,
+          user_id: utils.createUserId(),
+          max_votes: $scope.newBoard.max_votes || 6,
+          text_editing_is_private: $scope.newBoard.text_editing_is_private
+        }).then(function(result){
+          console.log(result);
+          redirectToBoard(result);
+        }).catch(function (error) {
+          console.error(error)
+        })
+        $scope.newBoard.name = '';
       };
 
       $scope.changeBoardContext = function() {
@@ -186,13 +147,14 @@ angular
         });
       };
 
-      $scope.changeBoardName = function(newBoardName) {
-        $scope.boardRef.update({
-          boardId: newBoardName
-        });
-
+      $scope.patchBoard = function(){
+        boardService.patch($scope.board._id,{boardName:$scope.board.boardName}).then(function(data){
+          $scope.board= data;
+        }).catch(function (error) {
+          console.error(error)
+        })
         modalService.closeAll();
-      };
+      }
 
       $scope.updateSortOrder = function() {
         var updatedFilter =
@@ -205,17 +167,20 @@ angular
       };
 
       $scope.addNewColumn = function(name) {
-        if (typeof name === 'undefined' || name === '') {
+        if (!name) {
           return;
         }
-
-        $scope.board.columns.push({
-          value: name,
-          id: utils.getNextId($scope.board)
+        boardService.patch($scope.board._id,{
+          $push: { columns: {
+            value: name,
+            id: utils.getNextId($scope.board)
+          } }
+        }).then(function(data){
+          $scope.board= data;
+          $scope.$apply();
+        }).catch(function (error) {
+          console.error(error)
         });
-
-        var boardColumns = firebaseService.getBoardColumns($scope.userId);
-        boardColumns.set(utils.toObject($scope.board.columns));
 
         modalService.closeAll();
       };
@@ -241,9 +206,15 @@ angular
         $scope.board.columns = $scope.board.columns.filter(function(_column) {
           return _column.id !== column.id;
         });
-
-        var boardColumns = firebaseService.getBoardColumns($scope.userId);
-        boardColumns.set(utils.toObject($scope.board.columns));
+        boardService.patch($scope.board._id, {
+          //$pop: { columns: 1 }
+          $pull: { columns: {id:column.id} }
+        }).then(function(data){
+          $scope.board= data;
+          $scope.$apply();
+        }).catch(function (error) {
+          console.error(error)
+        });
         modalService.closeAll();
       };
 
@@ -324,10 +295,12 @@ angular
       /* globals Clipboard */
       new Clipboard('.import-btn');
 
-      angular.element($window).bind('hashchange', function() {
+      function reloadBoard(){
         $scope.loading = true;
-        $scope.userId = $window.location.hash.substring(1) || '';
-        auth.logUser($scope.userId, getBoardAndMessages);
-      });
+        $scope.boardId = $window.location.hash.substring(1) || '';
+        getBoardAndMessages($scope.boardId)
+      }
+      angular.element($window).bind('hashchange', reloadBoard);
+      reloadBoard();
     }
   ]);

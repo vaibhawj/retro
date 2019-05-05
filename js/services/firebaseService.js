@@ -5,12 +5,6 @@ angular
   .service('FirebaseService', ['$feathers','firebase', '$firebaseArray', '$firebaseObject', function ($feathers,firebase, $firebaseArray, $firebaseObject) {
     var message = $feathers.service('message')
     var board = $feathers.service('board')
-    message.on('created', function (msg) {
-      console.log(msg)
-    })
-    board.on('created', function (msg) {
-      console.log(msg)
-    })
     function newFirebaseArray(messagesRef) {
       return $firebaseArray(messagesRef);
     }

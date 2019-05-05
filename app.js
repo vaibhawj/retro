@@ -29,20 +29,24 @@ app.use(express.urlencoded({extended: true}));
 app.configure(express.rest());
 // Enable Socket.io services
 app.configure(socketio({path: '/ws/'}));
+// On any real-time connection, add it to the `everybody` channel
+app.on('connection', connection => app.channel('everybody').join(connection));
+// Publish all events to the `everybody` channel
+app.publish(() => app.channel('everybody'));
 // Connect to the db, create and register a Feathers service.
 app.use('/message', service({
-  Model: message
+  Model: message,multi: true
 }));
 app.use('/board', service({
-  Model: board
+  Model: board,multi: true
 }));
 // Set up default error handler
 app.use(express.errorHandler());
  
 // Create a dummy Message
-app.service('message').create({
-  text: 'Message created on server'
-}).then(message => console.log('Created message', message));
+// app.service('message').create({
+//   text: 'Message created on server'
+// }).then(message => console.log('Created message', message));
  
 // Start the server.
 const port = 3030;

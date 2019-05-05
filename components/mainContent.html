@@ -1,4 +1,4 @@
-<div class="filter-mobile" ng-show="userId !== ''">
+<div class="filter-mobile" ng-show="!boardId">
   <label for="selectedType">Filter by</label>
   <select
     id="selectedType"
@@ -9,7 +9,7 @@
   <button class="pull-right new-column" ng-show="board.columns.length < 6" ng-click="modalService.openAddNewColumn(this)">New column</button>
 </div>
 <span class="container">
-    <span ng-show="boardId !== ''" class="message-list" x-lvl-drop-target="true" x-on-drop="droppedEvent(dragEl, dropEl)" data-column-id="{{type.id}}" ng-class="{'selected': isColumnSelected(type.id)}" ng-repeat="type in board.columns">
+    <span ng-show="boardId" class="message-list" x-lvl-drop-target="true" x-on-drop="droppedEvent(dragEl, dropEl)" data-column-id="{{type.id}}" ng-class="{'selected': isColumnSelected(type.id)}" ng-repeat="type in board.columns">
         <ul class="column {{utils.columnClass(type.id)}}">
           <div class="column-header">
             <a class="controls delete" ng-show="!editing && board.columns.length > 1" href="javascript:void(0)" ng-click="modalService.openDeleteColumn(this)" aria-label="Delete colummn"><i class="fa fa-times"></i></a>
