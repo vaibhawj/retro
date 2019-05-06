@@ -33,7 +33,7 @@
                       <div class="text" ng-bind-html="message.text | linky:'_blank'"></div>
                       <a href="javascript:void(0)" class="pencil message-body-link" ng-click="isEditing = true; utils.focusElement(message._id); message.creating = true; patchMessage(message);" aria-label="Edit message"><i class="fa fa-pencil"></i></a>
                   </div>
-                  <div class="votes">
+                  <div ng-class="board.hideVote ? 'hide-vote-count' : 'show-vote-count'" class="votes">
                       <a class="message-body-link" ng-show="voteService.canUnvoteMessage(userId, message.$id)" href="javascript:void(0)" ng-click="voteService.unvote(userId, message.$id, message.votes)" aria-label="Unvote">
                         <i class="fa fa-times"></i>
                       </a>
@@ -45,7 +45,7 @@
                          ng-click="toggerVote(message)" aria-label="Vote">
                             <i class="fa fa-thumbs-o-up"></i>
                         </a>
-                        <span ng-class="hideVote ? 'hide-vote-count' : 'show-vote-count'">
+                        <span>
                           {{ message.votes.length}}
                         </span>
                       </strong>

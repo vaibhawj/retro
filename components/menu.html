@@ -14,10 +14,7 @@
     <option value="votes">Votes</option>
   </select>
   <input class="filter-message" placeholder="Filter your cards" ng-model="filterMessage" aria-label="Filter your cards" />
-  <span ng-show="voteService.remainingVotes(userId, maxVotes, messages) < maxVotes" class="remaining-votes">Remaining votes: <strong>{{ voteService.remainingVotes(userId, maxVotes, messages) }}</strong>
-    <span class="null-blank-space">&nbsp;</span>
-    <span class="settings" ng-click="modalService.openVoteSettings(this)"><i class='fa fa-pencil fa-md'></i></span>
-  </span>
+  
   <span class="pull-right menu-controls">
     <a ng-show="user" class="header-icon" href="javascript:void(0)" ><i class="fa fa-user"></i> <span class="header-icon-desc">{{user}}</span></a>
     <a class="header-icon" href="javascript:void(0)" ng-click="sidebarOpened = true;" aria-label="Open settings sidebar"><i class="fa fa-gear"></i> <span class="header-icon-desc">settings</span></a>

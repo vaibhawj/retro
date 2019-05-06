@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('fireideaz').controller('MessageCtrl', ['$scope', '$window', 'ModalService', 'VoteService', '$feathers',
-  function ($scope, $window, modalService, voteService, $feathers) {
+angular.module('fireideaz').controller('MessageCtrl', ['$scope', '$window', 'ModalService', '$feathers',
+  function ($scope, $window, modalService, $feathers) {
     var messageService = $feathers.service('message');
     $scope.modalService = modalService;
 
@@ -22,12 +22,12 @@ angular.module('fireideaz').controller('MessageCtrl', ['$scope', '$window', 'Mod
             $in: [first, second]
           }
         }
-      }).then((result)=>{
-        var text = _.join(_.map(result,'text'),'\n');
-        var votes = _.union(_.flatten(_.concat(_.map(result,'votes'))));
-        messageService.patch(second,{
+      }).then((result) => {
+        var text = _.join(_.map(result, 'text'), '\n');
+        var votes = _.union(_.flatten(_.concat(_.map(result, 'votes'))));
+        messageService.patch(second, {
           text: text,
-          votes:votes
+          votes: votes
         })
         messageService.remove(first);
         modalService.closeAll();

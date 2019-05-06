@@ -26,13 +26,11 @@
   <h1>New board</h1>
   <label for="newBoardName">Board name</label>
   <input id="newBoardName" ng-model="newBoard.name" type="text" ng-keyup="submitOnEnter($event, 'createNewBoard')"></input>
-  <label for="maxUserVotes">Max votes per user <small>(whole board)</small></label>
-  <input id="maxUserVotes" ng-model="newBoard.max_votes" type="number" ng-init="newBoard.max_votes = 6" ng-keyup="submitOnEnter($event, 'createNewBoard')"></input>
   <div class="labeled-checkbox">
     <input class="toggle-checkbox" ng-model="newBoard.text_editing_is_private" type="checkbox" ng-checked="true"></input>
     <label>Private writing during card editing</label>
   <div>
-  <button ng-disabled="isBoardNameInvalid() || !isMaxVotesValid()" ng-click="createNewBoard()">Create</button>
+  <button ng-disabled="isBoardNameInvalid()" ng-click="createNewBoard()">Create</button>
 </script>
 <script type="text/ng-template" id="deleteCard">
   <h1>Delete note</h1>
@@ -82,14 +80,7 @@
 <script type="text/ng-template" id="voteSettings">
   <div class='vote-settings'>
     <h1>Vote Settings</h1>
-    <p>Define max number of votes per participant</p>
-    <p>
-      <span class="maximum-votes"> Max votes: <strong>{{ maxVotes }}</strong> </span>
-      <span class="null-blank-space">&nbsp</span>
-      <span><button class="increment-button" ng-click="voteService.incrementMaxVotes(userId, maxVotes);"><i class="fa fa-plus fa-md increment-button" aria-hidden="true"></i></button></span>
-      <span><button class="increment-button" ng-click="voteService.decrementMaxVotes(userId, maxVotes);"><i class="fa fa-minus fa-md decrement-button" aria-hidden="true"></i></button></span>
-    </p>
-    <button class="hide-vote" ng-click="hideVote = !hideVote; voteService.hideVote(userId, hideVote)"><span ng-if="!hideVote">Hide vote counts</span><span ng-if="hideVote">Show vote counts</span></button>
+    <button class="hide-vote" ng-click="board.hideVote = !board.hideVote; patchBoard()"><span ng-if="!board.hideVote">Hide vote counts</span><span ng-if="board.hideVote">Show vote counts</span></button>
   </div>
 </script>
 <script type="text/ng-template" id="cardSettings">

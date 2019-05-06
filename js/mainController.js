@@ -145,10 +145,6 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
       return !$scope.newBoard.name;
     };
 
-    $scope.isMaxVotesValid = function () {
-      return Number.isInteger($scope.newBoard.max_votes);
-    };
-
     $scope.createNewBoard = function () {
       $scope.loading = true;
       boardService.create({
@@ -156,7 +152,6 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
         date_created: Date.now(),
         columns: $scope.messageTypes,
         user: $scope.user,
-        max_votes: $scope.newBoard.max_votes || 6,
         text_editing_is_private: $scope.newBoard.text_editing_is_private
       }).then(function (result) {
         console.log(result);
