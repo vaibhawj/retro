@@ -49,6 +49,7 @@
     "@feathersjs/socketio": "^3.2.9",
     "angular": "^1.4.9",
     "angular-aria": "^1.5.5",
+    "angular-cookies": "^1.7.8",
     "angular-sanitize": "^1.5.5",
     "angularfire": "^2.3.0",
     "clipboard": "^1.7.1",

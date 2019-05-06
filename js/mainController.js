@@ -1,24 +1,33 @@
 /* global EmojiPicker */
 'use strict';
 
-angular.module('fireideaz').controller('MainCtrl', ['$scope', '$filter', '$window', 'Utils', '$rootScope', 'ModalService', 'FEATURES', '$feathers','$timeout',
-  function ($scope, $filter, $window, utils, $rootScope, modalService, FEATURES, $feathers,$timeout) {
+angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filter', '$window', 'Utils', '$rootScope', 'ModalService', 'FEATURES', '$feathers', '$timeout',
+  function ($cookies, $scope, $filter, $window, utils, $rootScope, modalService, FEATURES, $feathers, $timeout) {
+
     var messageService = $feathers.service('message')
     var boardService = $feathers.service('board')
 
     messageService.on('patched', function (msg) {
+      if (msg.creating) {
+        var element = $("[messageid='" + msg._id + "']");
+        if (angular.element(element).scope().isEditing) {
+          return;
+        }
+      }
+      var index = $scope.messages.findIndex((obj => obj._id == msg._id));
+      $scope.messages[index] = msg;
+      $scope.$apply();
       console.log('msg patched:', msg)
-      // var index = $scope.messages.findIndex((obj => obj._id == msg._id));
-      // $scope.messages[index] = msg;
-
     }).on('removed', function (msg) {
       _.remove($scope.messages, function (el) {
         return el._id === msg._id;
       })
       $scope.$apply();
       console.log('msg removed:', msg);
-    }).on('created',function(msg){
-
+    }).on('created', function (msg) {
+      $scope.messages.push(msg);
+      $scope.$apply();
+      console.log('msg created:', msg);
     })
 
     boardService.on('patched', function (board) {
@@ -49,6 +58,16 @@ angular.module('fireideaz').controller('MainCtrl', ['$scope', '$filter', '$windo
       mapping: []
     };
 
+    $scope.user = $cookies.get('user');
+    if (!$scope.user) {
+      $timeout(function () {
+        modalService.openLoginUser($scope);
+      })
+    }
+    $scope.saveUser = function () {
+      $cookies.put('user', $scope.user)
+      modalService.closeAll();
+    }
     $scope.droppedEvent = function (dragEl, dropEl) {
       var drag = $('#' + dragEl);
       var drop = $('#' + dropEl);
@@ -71,8 +90,11 @@ angular.module('fireideaz').controller('MainCtrl', ['$scope', '$filter', '$windo
         var boardReq = boardService.get($scope.boardId).then(function (board) {
           $scope.board = board;
         });
+
         var messageReq = messageService.find({
-          boardId: $scope.boardId
+          query: {
+            boardId: $scope.boardId
+          }
         }).then(function (msgs) {
           $scope.messages = msgs;
         })
@@ -84,6 +106,9 @@ angular.module('fireideaz').controller('MainCtrl', ['$scope', '$filter', '$windo
           if (error) {
             console.error(error)
             $scope.boardId = undefined;
+            $scope.loading = false;
+            alert(error);
+            $scope.$apply();
           }
         });
 
@@ -100,17 +125,6 @@ angular.module('fireideaz').controller('MainCtrl', ['$scope', '$filter', '$windo
       return message.creating && privateWritingOn;
     };
 
-    $scope.updatePrivateWritingToggle = function (privateWritingOn) {
-      $scope.boardRef.update({
-        text_editing_is_private: privateWritingOn
-      });
-    };
-
-    // $scope.updateEditingMessage = function (message, value) {
-    //   message.creating = value;
-    //   $scope.patchMessage(message)
-    // };
-
     $scope.getSortFields = function () {
       return $scope.sortField === 'votes' ? ['-votes', 'date_created'] :
         'date_created';
@@ -121,11 +135,6 @@ angular.module('fireideaz').controller('MainCtrl', ['$scope', '$filter', '$windo
         console.log(error);
       })
     }
-
-    // $scope.saveMessage = function (message) {
-    //   message.creating = false;
-    //   $scope.patchMessage(message);
-    // };
 
     function redirectToBoard(board) {
       window.location.href = window.location.origin + window.location.pathname + '#' + board._id;
@@ -142,12 +151,11 @@ angular.module('fireideaz').controller('MainCtrl', ['$scope', '$filter', '$windo
 
     $scope.createNewBoard = function () {
       $scope.loading = true;
-      modalService.closeAll();
       boardService.create({
         boardName: $scope.newBoard.name,
-        date_created: new Date().toString(),
+        date_created: Date.now(),
         columns: $scope.messageTypes,
-        user_id: utils.createUserId(),
+        user_id: $scope.user,
         max_votes: $scope.newBoard.max_votes || 6,
         text_editing_is_private: $scope.newBoard.text_editing_is_private
       }).then(function (result) {
@@ -157,27 +165,19 @@ angular.module('fireideaz').controller('MainCtrl', ['$scope', '$filter', '$windo
         console.error(error)
       })
       $scope.newBoard.name = '';
+      modalService.closeAll();
     };
 
     $scope.patchBoard = function () {
-      boardService.patch($scope.board._id, {
-        boardName: $scope.board.boardName,
-        boardContext: $scope.board.boardContext
-      }).then(function (data) {
-        $scope.board = data;
-      }).catch(function (error) {
-        console.error(error)
-      })
+      boardService.patch($scope.board._id, angular.copy($scope.board))
+        .catch(function (error) {
+          console.error(error)
+        })
       modalService.closeAll();
     }
 
     $scope.updateSortOrder = function () {
-      var updatedFilter =
-        $window.location.origin +
-        $window.location.pathname +
-        '?sort=' +
-        $scope.sortField +
-        $window.location.hash;
+      var updatedFilter = $window.location.origin + $window.location.pathname + '?sort=' + $scope.sortField + $window.location.hash;
       $window.history.pushState({
         path: updatedFilter
       }, '', updatedFilter);
@@ -196,14 +196,13 @@ angular.module('fireideaz').controller('MainCtrl', ['$scope', '$filter', '$windo
           console.error(error)
         });
       }
-
       modalService.closeAll();
     };
 
     $scope.changeColumnName = function (id, newName) {
       if (newName) {
         var index = $scope.board.columns.findIndex(x => x.id === id);
-         boardService.patch($scope.board._id, {
+        boardService.patch($scope.board._id, {
           $set: {
             ['columns.' + index + '.value']: newName
           }
@@ -234,46 +233,44 @@ angular.module('fireideaz').controller('MainCtrl', ['$scope', '$filter', '$windo
     };
 
     function addMessageCallback(message) {
-      var element = $("[messageid='" + message._id + "']");
-      angular.element(element).scope().isEditing = true;
-      new EmojiPicker();
-      $timeout(function(){
-        element.find('textarea').focus();
-      },0);
+
     }
 
     $scope.addNewMessage = function (type) {
       messageService.create({
         text: '',
         creating: true,
-        user_id: $scope.userUid,
+        boardId: $scope.boardId,
+        user_id: $scope.user,
         type: {
           id: type.id
         },
         date: Date.now(),
         date_created: Date.now(),
         votes: 0
-      }).then(function (msg) {
-        $scope.messages.push(msg);
-        $scope.$apply();
-        return msg;
-      }).then(addMessageCallback).catch(function (error) {
+      }).then((message) => {
+        $timeout(function () {
+          var element = $("[messageid='" + message._id + "']");
+          angular.element(element).scope().isEditing = true;
+          new EmojiPicker();
+          element.find('textarea').focus();
+        }, 0);
+      }).catch(function (error) {
         console.error(error)
       })
     };
 
     $scope.deleteCards = function () {
-      $($scope.messages).each(function (index, message) {
-        $scope.messages.$remove(message);
+      messageService.remove(null, {
+        query: {
+          boardId: $scope.board._id
+        }
       });
-
       modalService.closeAll();
     };
 
     $scope.deleteBoard = function () {
-      $scope.deleteCards();
-      $scope.boardRef.ref.remove();
-
+      boardService.remove($scope.board._id);
       modalService.closeAll();
       window.location.hash = '';
       location.reload();

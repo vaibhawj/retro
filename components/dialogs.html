@@ -1,3 +1,8 @@
+<script type="text/ng-template" id="loginUser">
+  <h1>Your name please</h1>
+  <input ng-model="$parent.user" type="text" ></input>
+  <button ng-click="saveUser()">Save</button>
+</script>
 <script type="text/ng-template" id="deleteCards">
   <p class="header">Danger Zone</p>
   <p>Are you sure you want to delete all cards?</p>
@@ -90,7 +95,7 @@
 <script type="text/ng-template" id="cardSettings">
   <h1>Private writing</h1>
     <div class="labeled-checkbox">
-      <input class="toggle-checkbox" id="toggle-private" type="checkbox" ng-model="boardObject.text_editing_is_private" ng-change="updatePrivateWritingToggle(boardObject.text_editing_is_private)"></input>
+      <input class="toggle-checkbox" id="toggle-private" type="checkbox" ng-model="board.text_editing_is_private" ng-change="patchBoard(board)"></input>
       <label for="toggle-private">Private writing during card editing</label>
     </div>
 </script>
