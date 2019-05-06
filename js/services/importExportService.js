@@ -1,10 +1,7 @@
 'use strict';
 
-angular
-  .module('fireideaz')
-  .service('ImportExportService', 
-          ['FirebaseService', 'ModalService', 'CsvService', '$filter', 
-          function (firebaseService, modalService, CsvService, $filter) {
+angular.module('fireideaz').service('ImportExportService', ['$feathers', 'ModalService', 'CsvService', '$filter',
+  function ($feathers, modalService, CsvService, $filter) {
     var importExportService = {};
 
     importExportService.importMessages = function (userUid, importObject, messages) {
@@ -17,20 +14,21 @@ angular
           var mapTo = mapping[mappingIndex].mapTo;
 
           if (mapFrom === -1) {
-           continue;
-         }
+            continue;
+          }
 
           var cardText = data[importIndex][mapFrom];
 
           if (cardText) {
-             messages.$add({
-             text: cardText,
-             user_id: userUid,
-             type: {
-               id: mapTo
-             },
-             date: firebaseService.getServerTimestamp(),
-             votes: 0});
+            messages.$add({
+              text: cardText,
+              user_id: userUid,
+              type: {
+                id: mapTo
+              },
+              date: firebaseService.getServerTimestamp(),
+              votes: 0
+            });
           }
         }
       }
@@ -38,15 +36,15 @@ angular
       modalService.closeAll();
     };
 
-    importExportService.getSortFields = function(sortField) {
+    importExportService.getSortFields = function (sortField) {
       return sortField === 'votes' ? ['-votes', 'date_created'] : 'date_created';
     };
 
-    importExportService.getBoardText = function(board, messages, sortField) {
+    importExportService.getBoardText = function (board, messages, sortField) {
       if (board) {
         var clipboard = '';
 
-        $(board.columns).each(function(index, column) {
+        $(board.columns).each(function (index, column) {
           if (index === 0) {
             clipboard += '<strong>' + column.value + '</strong><br />';
           } else {
@@ -55,7 +53,7 @@ angular
 
           var filteredArray = $filter('orderBy')(messages, importExportService.getSortFields(sortField));
 
-          $(filteredArray).each(function(index2, message) {
+          $(filteredArray).each(function (index2, message) {
             if (message.type.id === column.id) {
               clipboard += '- ' + message.text + ' (' + message.votes + ' votes) <br />';
             }
@@ -68,11 +66,11 @@ angular
       return '';
     };
 
-    importExportService.getBoardPureText = function(board, messages, sortField) {
+    importExportService.getBoardPureText = function (board, messages, sortField) {
       if (board) {
         var clipboard = '';
 
-        $(board.columns).each(function(index, column) {
+        $(board.columns).each(function (index, column) {
           if (index === 0) {
             clipboard += column.value + '\n';
           } else {
@@ -81,7 +79,7 @@ angular
 
           var filteredArray = $filter('orderBy')(messages, importExportService.getSortFields(sortField));
 
-          $(filteredArray).each(function(index2, message) {
+          $(filteredArray).each(function (index2, message) {
             if (message.type.id === column.id) {
               clipboard += '- ' + message.text + ' (' + message.votes + ' votes) \n';
             }
@@ -106,16 +104,20 @@ angular
 
         /* globals Papa */
         Papa.parse(file, {
-          complete: function(results) {
+          complete: function (results) {
             if (results.data.length > 0) {
               importObject.data = results.data;
 
-              board.columns.forEach (function (column){
-                importObject.mapping.push({ mapFrom: '-1', mapTo: column.id, name: column.value });
+              board.columns.forEach(function (column) {
+                importObject.mapping.push({
+                  mapFrom: '-1',
+                  mapTo: column.id,
+                  name: column.value
+                });
               });
 
               if (results.errors.length > 0) {
-                 importObject.error = results.errors[0].message;
+                importObject.error = results.errors[0].message;
               }
 
               scope.$apply();
@@ -125,12 +127,12 @@ angular
       }
     };
 
-    importExportService.generatePdf = function(board, messages, sortField) {
+    importExportService.generatePdf = function (board, messages, sortField) {
       /* globals jsPDF */
       var pdf = new jsPDF();
       var currentHeight = 10;
 
-      $(board.columns).each(function(index, column) {
+      $(board.columns).each(function (index, column) {
         if (currentHeight > pdf.internal.pageSize.height - 10) {
           pdf.addPage();
           currentHeight = 10;
@@ -144,7 +146,7 @@ angular
 
         var filteredArray = $filter('orderBy')(messages, importExportService.getSortFields(sortField));
 
-        $(filteredArray).each(function(index2, message) {
+        $(filteredArray).each(function (index2, message) {
           if (message.type.id === column.id) {
             var parsedText = pdf.splitTextToSize('- ' + message.text + ' (' + message.votes + ' votes)', 180);
             var parsedHeight = pdf.getTextDimensions(parsedText).h;
@@ -162,7 +164,7 @@ angular
       pdf.save(board.boardId + '.pdf');
     };
 
-    var getColumnFieldObject = function(columnId) {
+    var getColumnFieldObject = function (columnId) {
       return {
         type: {
           id: columnId
@@ -170,25 +172,27 @@ angular
       };
     };
 
-    var showCsvFileDownload = function(csvText, fileName) {
+    var showCsvFileDownload = function (csvText, fileName) {
       var blob = new Blob([csvText]);
       var downloadLink = document.createElement('a');
-      downloadLink.href = window.URL.createObjectURL(blob, {type: 'text/csv'});
+      downloadLink.href = window.URL.createObjectURL(blob, {
+        type: 'text/csv'
+      });
       downloadLink.download = fileName;
-      
+
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
     };
 
-    importExportService.generateCsv = function(board, messages, sortField) {
+    importExportService.generateCsv = function (board, messages, sortField) {
 
-      var columns = board.columns.map(function(column) {
+      var columns = board.columns.map(function (column) {
         // Updated to use column.id, as columns could be any number when changed.
         var columnMessages = $filter('filter')(messages, getColumnFieldObject(column.id));
         var sortedColumnMessages = $filter('orderBy')(columnMessages, importExportService.getSortFields(sortField));
-        
-        var messagesText = sortedColumnMessages.map(function(message) { 
+
+        var messagesText = sortedColumnMessages.map(function (message) {
           return message.text;
         });
 
@@ -202,4 +206,5 @@ angular
     };
 
     return importExportService;
-  }]);
+  }
+]);

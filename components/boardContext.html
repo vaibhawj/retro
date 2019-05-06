@@ -2,7 +2,7 @@
     ng-show="boardId"
     id="board-context"
     class="board-context"
-    ng-model="boardContext"
-    ng-change="changeBoardContext()"
+    ng-model="board.boardContext"
+    ng-blur="patchBoard()"
     placeholder="Set the context of the retrospective here..."
     aria-label="Board context" />

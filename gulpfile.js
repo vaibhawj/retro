@@ -72,9 +72,7 @@ var bundleVendorJS = function() {
     .src([
       "js/vendor/jquery-3.2.1.min.js",
       "node_modules/angular/angular.min.js",
-      "js/vendor/firebase.js",
-      "js/vendor/firebaseInitialization.js",
-      "node_modules/angularfire/dist/angularfire.min.js",
+      "node_modules/lodash/lodash.min.js",
       "node_modules/ng-feathers/dist/ng-feathers.standalone.min.js",
       "node_modules/angular-*/**/angular-*.min.js",
       "node_modules/core-js/client/shim.min.js",

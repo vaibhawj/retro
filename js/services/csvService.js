@@ -1,22 +1,22 @@
 'use strict';
 
 angular.module('fireideaz').service('CsvService', [
-  function() {
+  function () {
     var csvService = {};
 
-    var arrayExists = function(array) {
+    var arrayExists = function (array) {
       return array !== undefined;
     };
 
-    var isEmptyCell = function(nextValue) {
+    var isEmptyCell = function (nextValue) {
       return nextValue === undefined;
     };
 
-    var isString = function(stringValue) {
+    var isString = function (stringValue) {
       return typeof stringValue === 'string' || stringValue instanceof String;
     };
 
-    var endodeForCsv = function(stringToEncode) {
+    var endodeForCsv = function (stringToEncode) {
       // Enocde " characters
       stringToEncode = stringToEncode.replace(/"/g, '""');
 
@@ -28,7 +28,7 @@ angular.module('fireideaz').service('CsvService', [
       return stringToEncode;
     };
 
-    csvService.buildCsvText = function(doubleArray) {
+    csvService.buildCsvText = function (doubleArray) {
       var csvText = '';
 
       var longestColumn = csvService.determineLongestColumn(doubleArray);
@@ -59,8 +59,8 @@ angular.module('fireideaz').service('CsvService', [
       return csvText;
     };
 
-    csvService.determineLongestColumn = function(doubleArray) {
-      return doubleArray.reduce(function(prev, next) {
+    csvService.determineLongestColumn = function (doubleArray) {
+      return doubleArray.reduce(function (prev, next) {
         return next.length > prev ? next.length : prev;
       }, doubleArray.length);
     };

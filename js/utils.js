@@ -23,6 +23,9 @@ angular
     }, {
       id: 3,
       value: 'Action items'
+    }, {
+      id: 4,
+      value: 'Sprint Star'
     }];
 
     function getNextId(board) {
