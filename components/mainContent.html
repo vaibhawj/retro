@@ -41,11 +41,12 @@
                         <li ng-repeat="votes in voteService.getNumberOfVotesOnMessage(userId, message.$id) track by $index"></li>
                       </ul>
                       <strong class="vote-area">
-                        <a ng-class="{'disabled': !voteService.isAbleToVote(userId, maxVotes, messages), 'message-body-link': true}" href="javascript:void(0)" ng-click="voteService.vote(userId, maxVotes, messages, message.$id, message.votes)" aria-label="Vote">
+                        <a ng-class="{'message-body-link': true}" href="javascript:void(0)"
+                         ng-click="toggerVote(message)" aria-label="Vote">
                             <i class="fa fa-thumbs-o-up"></i>
                         </a>
                         <span ng-class="hideVote ? 'hide-vote-count' : 'show-vote-count'">
-                          {{ message.votes }}
+                          {{ message.votes.length}}
                         </span>
                       </strong>
                   </div>

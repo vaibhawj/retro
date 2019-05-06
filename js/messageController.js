@@ -2,48 +2,36 @@
 
 angular.module('fireideaz').controller('MessageCtrl', ['$scope', '$window', 'ModalService', 'VoteService', '$feathers',
   function ($scope, $window, modalService, voteService, $feathers) {
-    
-    function mergeCardVotes(first, second) {
-      voteService.mergeMessages($scope.boardId, first, second);
-    }
+    var messageService = $feathers.service('message');
     $scope.modalService = modalService;
-    $scope.boardId = $window.location.hash.substring(1);
 
     $scope.dropCardOnCard = function (dragEl, dropEl) {
       if (dragEl !== dropEl) {
         $scope.dragEl = dragEl;
         $scope.dropEl = dropEl;
-
         modalService.openMergeCards($scope);
       }
     };
 
     $scope.dropped = function (dragEl, dropEl) {
-      var drag = $('#' + dragEl);
-      var drop = $('#' + dropEl);
-      var firstCardId = drag.attr('messageId');
-      var secondCardId = drop.attr('messageId');
-      var firstCardReference = firebaseService.getMessageRef(
-        $scope.userId,
-        firstCardId
-      );
-      var secondCardReference = firebaseService.getMessageRef(
-        $scope.userId,
-        secondCardId
-      );
-
-      secondCardReference.once('value', function (firstCard) {
-        firstCardReference.once('value', function (secondCard) {
-          secondCardReference.update({
-            text: firstCard.val().text + '\n' + secondCard.val().text,
-            votes: firstCard.val().votes + secondCard.val().votes
-          });
-
-          mergeCardVotes(firstCardId, secondCardId);
-          firstCardReference.remove();
-          modalService.closeAll();
-        });
-      });
+      var first = $('#' + dragEl).attr('messageId');
+      var second = $('#' + dropEl).attr('messageId');
+      messageService.find({
+        query: {
+          _id: {
+            $in: [first, second]
+          }
+        }
+      }).then((result)=>{
+        var text = _.join(_.map(result,'text'),'\n');
+        var votes = _.union(_.flatten(_.concat(_.map(result,'votes'))));
+        messageService.patch(second,{
+          text: text,
+          votes:votes
+        })
+        messageService.remove(first);
+        modalService.closeAll();
+      })
     };
   }
 ]);

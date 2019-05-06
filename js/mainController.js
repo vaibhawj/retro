@@ -259,7 +259,7 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
         },
         date: Date.now(),
         date_created: Date.now(),
-        votes: 0
+        votes: []
       }).then((message) => {
         $timeout(function () {
           var element = $("[messageid='" + message._id + "']");
@@ -295,6 +295,18 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
         showMessage('permission denied')
       }
     };
+
+    $scope.toggerVote = function(message){
+      if(message.votes.indexOf($scope.user)==-1){
+        messageService.patch(message._id, {$push: { votes: $scope.user } }).catch((error) => {
+          console.log(error);
+        })
+      }else{
+        messageService.patch(message._id, {$pull: { votes: $scope.user } }).catch((error) => {
+          console.log(error);
+        })
+      }
+    }
 
     $scope.submitOnEnter = function (event, method, data) {
       if (event.keyCode === 13) {
