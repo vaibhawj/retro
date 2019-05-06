@@ -155,7 +155,7 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
         boardName: $scope.newBoard.name,
         date_created: Date.now(),
         columns: $scope.messageTypes,
-        user_id: $scope.user,
+        user: $scope.user,
         max_votes: $scope.newBoard.max_votes || 6,
         text_editing_is_private: $scope.newBoard.text_editing_is_private
       }).then(function (result) {
@@ -214,22 +214,34 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     };
 
     $scope.deleteColumn = function (column) {
-      boardService.patch($scope.board._id, {
-        $pull: {
-          columns: {
-            id: column.id
+      if ($scope.board.user == $scope.user) {
+        boardService.patch($scope.board._id, {
+          $pull: {
+            columns: {
+              id: column.id
+            }
           }
-        }
-      }).catch(function (error) {
-        console.error(error)
-      });
+        }).catch(function (error) {
+          console.error(error)
+        });
+      } else {
+        showMessage('permission denied')
+      }
       modalService.closeAll();
     };
 
+    function showMessage(msg) {
+      alert(msg);
+    }
+
     $scope.deleteMessage = function (message) {
-      messageService.remove(message._id).then(function (msg) {
-        modalService.closeAll();
-      })
+      if (message.user == $scope.user) {
+        messageService.remove(message._id).then(function (msg) {
+          modalService.closeAll();
+        })
+      } else {
+        showMessage('permission denied')
+      }
     };
 
     function addMessageCallback(message) {
@@ -241,7 +253,7 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
         text: '',
         creating: true,
         boardId: $scope.boardId,
-        user_id: $scope.user,
+        user: $scope.user,
         type: {
           id: type.id
         },
@@ -261,19 +273,27 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     };
 
     $scope.deleteCards = function () {
-      messageService.remove(null, {
-        query: {
-          boardId: $scope.board._id
-        }
-      });
+      if ($scope.board.user == $scope.user) {
+        messageService.remove(null, {
+          query: {
+            boardId: $scope.board._id
+          }
+        });
+      } else {
+        showMessage('permission denied')
+      }
       modalService.closeAll();
     };
 
     $scope.deleteBoard = function () {
-      boardService.remove($scope.board._id);
-      modalService.closeAll();
-      window.location.hash = '';
-      location.reload();
+      if ($scope.board.user == $scope.user) {
+        boardService.remove($scope.board._id);
+        modalService.closeAll();
+        window.location.hash = '';
+        location.reload();
+      } else {
+        showMessage('permission denied')
+      }
     };
 
     $scope.submitOnEnter = function (event, method, data) {
