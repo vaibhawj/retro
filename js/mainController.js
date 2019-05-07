@@ -225,7 +225,8 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     };
 
     function showMessage(msg) {
-      alert(msg);
+      modalService.closeAll();
+      toastr.error(msg, 'Error');
     }
     $scope.editMessage = function (message) {
       message.creating = true;
