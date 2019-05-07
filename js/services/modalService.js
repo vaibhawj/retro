@@ -6,7 +6,7 @@ angular
     return {
       openLoginUser: function (scope) {
         ngDialog.open({
-          template: 'setUserName',
+          template: 'setUserName.html',
           className: 'ngdialog-theme-plain',
           scope: scope
         });
