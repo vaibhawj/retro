@@ -1,11 +1,11 @@
-<div ng-show="userId !== ''" class="menu">
-  <span class="board-name-container" ng-click="editingBoardName=true;newBoardName=boardId;">
-    <h2 id="board-name" class="board-name" ng-show="!editingBoardName">{{boardId}}</h2>
+<div ng-show="boardId" class="menu">
+  <span class="board-name-container" ng-click="editingBoardName=true;newBoardName=boardName;">
+    <h2 id="board-name" class="board-name" ng-show="!editingBoardName">{{board.boardName}}</h2>
     <i class="fa fa-pencil" ng-show="!editingBoardName"></i>
   </span>
   <span ng-show="editingBoardName" class="editing-board-name">
-    <input title="edit the board name" ng-model="newBoardName" focus></input>
-    <button ng-click="changeBoardName(newBoardName);editingBoardName=false;" class="success-button">Save</button>
+    <input title="edit the board name" ng-model="board.boardName" focus></input>
+    <button ng-click="patchBoard();editingBoardName=false;" class="success-button">Save</button>
     <a class="blue" ng-click="editingBoardName=false;">Cancel</a>
   </span>
   <label for="sortField" class="menu-controls">Sort by</label>
@@ -14,12 +14,11 @@
     <option value="votes">Votes</option>
   </select>
   <input class="filter-message" placeholder="Filter your cards" ng-model="filterMessage" aria-label="Filter your cards" />
-  <span ng-show="voteService.remainingVotes(userId, maxVotes, messages) < maxVotes" class="remaining-votes">Remaining votes: <strong>{{ voteService.remainingVotes(userId, maxVotes, messages) }}</strong>
-    <span class="null-blank-space">&nbsp;</span>
-    <span class="settings" ng-click="modalService.openVoteSettings(this)"><i class='fa fa-pencil fa-md'></i></span>
-  </span>
+  
   <span class="pull-right menu-controls">
+    <a ng-show="user" class="header-icon" href="javascript:void(0)" ><i class="fa fa-user"></i> <span class="header-icon-desc">{{user}}</span></a>
     <a class="header-icon" href="javascript:void(0)" ng-click="sidebarOpened = true;" aria-label="Open settings sidebar"><i class="fa fa-gear"></i> <span class="header-icon-desc">settings</span></a>
+    <button ng-hide="user" class="new-column" ng-click="modalService.openLoginUser(this)">Login</button>    
     <button class="pull-right new-column" ng-show="board.columns.length < 6" ng-click="modalService.openAddNewColumn(this)">New column</button>
   </span>
 </div>

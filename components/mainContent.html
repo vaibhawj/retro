@@ -1,4 +1,4 @@
-<div class="filter-mobile" ng-show="userId !== ''">
+<div class="filter-mobile" ng-show="!boardId">
   <label for="selectedType">Filter by</label>
   <select
     id="selectedType"
@@ -9,7 +9,7 @@
   <button class="pull-right new-column" ng-show="board.columns.length < 6" ng-click="modalService.openAddNewColumn(this)">New column</button>
 </div>
 <span class="container">
-    <span ng-show="boardId !== ''" class="message-list" x-lvl-drop-target="true" x-on-drop="droppedEvent(dragEl, dropEl)" data-column-id="{{type.id}}" ng-class="{'selected': isColumnSelected(type.id)}" ng-repeat="type in board.columns">
+    <span ng-show="boardId" class="message-list" x-lvl-drop-target="true" x-on-drop="droppedEvent(dragEl, dropEl)" data-column-id="{{type.id}}" ng-class="{'selected': isColumnSelected(type.id)}" ng-repeat="type in board.columns">
         <ul class="column {{utils.columnClass(type.id)}}">
           <div class="column-header">
             <a class="controls delete" ng-show="!editing && board.columns.length > 1" href="javascript:void(0)" ng-click="modalService.openDeleteColumn(this)" aria-label="Delete colummn"><i class="fa fa-times"></i></a>
@@ -25,15 +25,15 @@
                 <a class="blue" ng-click="editing=false;">Cancel</a>
               </div>
           </div>
-          <li ng-controller="MessageCtrl" id="{{ message.$id }}" enter-click class="message" ng-class="{'flip': isEditing}" ng-repeat="message in messages | filter: {type: {id: type.id}, text: filterMessage} | orderBy: getSortFields()">
-            <div messageId="{{ message.$id }}" x-lvl-draggable x-lvl-drop-target="true" x-on-drop="dropCardOnCard(dragEl, dropEl)" draggable="{{ !isEditing }}">
+          <li ng-controller="MessageCtrl" id="{{ message._id }}" enter-click class="message" ng-class="{'flip': isEditing}" ng-repeat="message in messages | filter: {type: {id: type.id}, text: filterMessage} | orderBy: getSortFields()">
+            <div messageId="{{ message._id }}" x-lvl-draggable x-lvl-drop-target="true" x-on-drop="dropCardOnCard(dragEl, dropEl)" draggable="{{ !isEditing }}">
 
-              <div class="front" ng-class="{'filter': isCensored(message, boardObject.text_editing_is_private)}">
+              <div class="front" ng-dblclick="isEditing = true; editMessage(message)" ng-class="{'filter': message.creating && board.text_editing_is_private}">
                   <div class="message-body">
                       <div class="text" ng-bind-html="message.text | linky:'_blank'"></div>
-                      <a href="javascript:void(0)" class="pencil message-body-link" ng-click="isEditing = true; utils.focusElement(message.$id); updateEditingMessage(message, true);" aria-label="Edit message"><i class="fa fa-pencil"></i></a>
+                      <a href="javascript:void(0)" class="pencil message-body-link" ng-click="isEditing = true; editMessage(message)" aria-label="Edit message"><i class="fa fa-pencil"></i></a>
                   </div>
-                  <div class="votes">
+                  <div ng-class="board.hideVote ? 'hide-vote-count' : 'show-vote-count'" class="votes">
                       <a class="message-body-link" ng-show="voteService.canUnvoteMessage(userId, message.$id)" href="javascript:void(0)" ng-click="voteService.unvote(userId, message.$id, message.votes)" aria-label="Unvote">
                         <i class="fa fa-times"></i>
                       </a>
@@ -41,11 +41,12 @@
                         <li ng-repeat="votes in voteService.getNumberOfVotesOnMessage(userId, message.$id) track by $index"></li>
                       </ul>
                       <strong class="vote-area">
-                        <a ng-class="{'disabled': !voteService.isAbleToVote(userId, maxVotes, messages), 'message-body-link': true}" href="javascript:void(0)" ng-click="voteService.vote(userId, maxVotes, messages, message.$id, message.votes)" aria-label="Vote">
+                        <a ng-class="{'message-body-link': true}" href="javascript:void(0)"
+                         ng-click="toggerVote(message)" aria-label="Vote">
                             <i class="fa fa-thumbs-o-up"></i>
                         </a>
-                        <span ng-class="hideVote ? 'hide-vote-count' : 'show-vote-count'">
-                          {{ message.votes }}
+                        <span>
+                          {{ message.votes.length}}
                         </span>
                       </strong>
                   </div>
@@ -53,8 +54,9 @@
               <div class="back">
                   <div class="message-body">
                       <div class="editing">
-                          <textarea data-emoji-picker="true" ng-model="message.text" ng-change="messages.$save(message)" aria-label="Message text entry"></textarea>
-                          <button ng-click="isEditing = false;saveMessage(message); updateEditingMessage(message, false);">DONE</button>
+                          <!-- ng-blur="patchMessage(message)"  -->
+                          <textarea data-emoji-picker="true" ng-model="message.text" aria-label="Message text entry"></textarea>
+                          <button ng-click="isEditing = false;message.creating = false; patchMessage(message);">DONE</button>
                           <a class="delete-link message-body-link" href="javascript:void(0)" ng-click="modalService.openDeleteCard(this)" aria-label="Delete message"><i class="fa fa-trash"></i></a>
                       </div>
                   </div>

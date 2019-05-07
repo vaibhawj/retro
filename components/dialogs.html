@@ -1,3 +1,8 @@
+<script type="text/ng-template" id="loginUser">
+  <h1>Your name please</h1>
+  <input ng-model="$parent.user" type="text" ></input>
+  <button ng-click="saveUser()">Save</button>
+</script>
 <script type="text/ng-template" id="deleteCards">
   <p class="header">Danger Zone</p>
   <p>Are you sure you want to delete all cards?</p>
@@ -21,13 +26,11 @@
   <h1>New board</h1>
   <label for="newBoardName">Board name</label>
   <input id="newBoardName" ng-model="newBoard.name" type="text" ng-keyup="submitOnEnter($event, 'createNewBoard')"></input>
-  <label for="maxUserVotes">Max votes per user <small>(whole board)</small></label>
-  <input id="maxUserVotes" ng-model="newBoard.max_votes" type="number" ng-init="newBoard.max_votes = 6" ng-keyup="submitOnEnter($event, 'createNewBoard')"></input>
   <div class="labeled-checkbox">
     <input class="toggle-checkbox" ng-model="newBoard.text_editing_is_private" type="checkbox" ng-checked="true"></input>
     <label>Private writing during card editing</label>
   <div>
-  <button ng-disabled="isBoardNameInvalid() || !isMaxVotesValid()" ng-click="createNewBoard()">Create</button>
+  <button ng-disabled="isBoardNameInvalid()" ng-click="createNewBoard()">Create</button>
 </script>
 <script type="text/ng-template" id="deleteCard">
   <h1>Delete note</h1>
@@ -47,50 +50,16 @@
   <button ng-controller="MessageCtrl" class="delete-button" ng-click="dropped(dragEl, dropEl)">Merge</button>
   <a ng-click="modalService.closeAll();">Cancel</a>
 </script>
-<script type="text/ng-template" id="importCards">
-  <h1>Import CSV</h1>
-  <span>
-    <p>1. <a class="inline-link" type="file" ngf-select="importExportService.submitImportFile($file, import, board, this)" ngf-pattern="text/csv" accept="text/csv" ngf-max-size="10KB"> Upload</a> a CSV file </p>
-    <p>File example:
-      <pre><code>
-  Went well, To improve, Action items
-  text 1, text 3, text 5
-  text 2, text 4, text 6
-      </code></pre>
-    </p>
-    <p ng-show="import.mapping.length > 0">2. Asign each column to a specific CSV column</button></p>
-    <table>
-      <tr ng-repeat="column in import.mapping track by $index">
-        <td class="align-right"><label for="column{{$index}}">{{column.name}}</label></td>
-        <td class="align-left">
-          <select id="column{{$index}}" class="import-select" ng-model="column.mapFrom">
-            <option select="selected" value="-1">Select csv column</option>
-            <option ng-repeat="importColumn in import.data[0] track by $index" value="{{$index}}">{{importColumn}}</option>
-          </select>
-        </td>
-    </table>
-    <p class="error-msg" ng-show="import.error"> {{import.error}} </p>
-    <button ng-click="importExportService.importMessages(userUid, import, messages)" ng-disabled="(import.mapping | filter: { mapFrom: '!-1' }).length == 0">Import</button>
-    <a ng-click="modalService.closeAll();">Cancel</a>
-    </span>
-</script>
 <script type="text/ng-template" id="voteSettings">
   <div class='vote-settings'>
     <h1>Vote Settings</h1>
-    <p>Define max number of votes per participant</p>
-    <p>
-      <span class="maximum-votes"> Max votes: <strong>{{ maxVotes }}</strong> </span>
-      <span class="null-blank-space">&nbsp</span>
-      <span><button class="increment-button" ng-click="voteService.incrementMaxVotes(userId, maxVotes);"><i class="fa fa-plus fa-md increment-button" aria-hidden="true"></i></button></span>
-      <span><button class="increment-button" ng-click="voteService.decrementMaxVotes(userId, maxVotes);"><i class="fa fa-minus fa-md decrement-button" aria-hidden="true"></i></button></span>
-    </p>
-    <button class="hide-vote" ng-click="hideVote = !hideVote; voteService.hideVote(userId, hideVote)"><span ng-if="!hideVote">Hide vote counts</span><span ng-if="hideVote">Show vote counts</span></button>
+    <button class="hide-vote" ng-click="board.hideVote = !board.hideVote; patchBoard()"><span ng-if="!board.hideVote">Hide vote counts</span><span ng-if="board.hideVote">Show vote counts</span></button>
   </div>
 </script>
 <script type="text/ng-template" id="cardSettings">
   <h1>Private writing</h1>
     <div class="labeled-checkbox">
-      <input class="toggle-checkbox" id="toggle-private" type="checkbox" ng-model="boardObject.text_editing_is_private" ng-change="updatePrivateWritingToggle(boardObject.text_editing_is_private)"></input>
+      <input class="toggle-checkbox" id="toggle-private" type="checkbox" ng-model="board.text_editing_is_private" ng-change="patchBoard(board)"></input>
       <label for="toggle-private">Private writing during card editing</label>
     </div>
 </script>
