@@ -1,7 +1,5 @@
 var gulp = require("gulp"),
   clean = require("gulp-clean"),
-  jshint = require("gulp-jshint"),
-  Server = require("karma").Server,
   concat = require("gulp-concat"),
   gp_rename = require("gulp-rename"),
   uglify = require("gulp-uglify"),
@@ -13,39 +11,43 @@ var gulp = require("gulp"),
   path = require("path"),
   watch = require("gulp-watch"),
   autoprefixer = require("gulp-autoprefixer");
-  var    exec = require('child_process').exec;
+  
+var exec = require('child_process').exec;
 
-gulp.task("express", function() {
+gulp.task("express", function () {
   var app = express();
-  app.use(connectlivereload({ port: 35729 }));
+  app.use(connectlivereload({
+    port: 35729
+  }));
   app.use(express.static("./dist"));
   var port = 4000;
-  app.listen(port, "0.0.0.0", function() {
+  app.listen(port, "0.0.0.0", function () {
     console.log("App running and listening on port", port);
   });
 });
 
-gulp.task('server', (cb) => {
-  exec('node app.js', err => err);
-});
 
 var tinylr;
 
 function notifyLiveReload(event) {
-  tinylr.changed({ body: { files: [path.relative(__dirname, event.path)] } });
+  tinylr.changed({
+    body: {
+      files: [path.relative(__dirname, event.path)]
+    }
+  });
 }
 
-gulp.task("livereload", function() {
+gulp.task("livereload", function () {
   tinylr = require("tiny-lr")();
   tinylr.listen(35729);
 });
 
-var buildHTML = function() {
+var buildHTML = function () {
   gulp.src("index.html").pipe(gulp.dest("dist"));
   gulp.src("components/*").pipe(gulp.dest("dist/components"));
 };
 
-var bundleVendorCSS = function() {
+var bundleVendorCSS = function () {
   gulp
     .src([
       "node_modules/font-awesome/css/font-awesome.min.css",
@@ -58,7 +60,7 @@ var bundleVendorCSS = function() {
     .pipe(gulp.dest("dist/css"));
 };
 
-var processSass = function() {
+var processSass = function () {
   gulp
     .src(["stylesheets/main.scss"])
     .pipe(sass().on("error", sass.logError))
@@ -68,7 +70,7 @@ var processSass = function() {
     .pipe(gulp.dest("dist/css"));
 };
 
-var bundleVendorJS = function() {
+var bundleVendorJS = function () {
   gulp
     .src([
       "js/vendor/jquery-3.2.1.min.js",
@@ -90,25 +92,27 @@ var bundleVendorJS = function() {
     .pipe(gulp.dest("dist"));
 };
 
-var minifyJS = function() {
+var minifyJS = function () {
   gulp
     .src(["js/*.js", "js/**/*.js", "!js/vendor/*.js"])
     .pipe(concat("main.js"))
     .pipe(gulp.dest("dist"));
 };
 
-gulp.task("clean-dist", function() {
-  return gulp.src("dist/*", { read: false }).pipe(clean());
+gulp.task("clean-dist", function () {
+  return gulp.src("dist/*", {
+    read: false
+  }).pipe(clean());
 });
 
-gulp.task("bundle", function() {
+gulp.task("bundle", function () {
   bundleVendorCSS();
   bundleVendorJS();
   processSass();
   minifyJS();
 });
 
-gulp.task("watch", function(cb) {
+gulp.task("watch", function (cb) {
   watch("dist/*", notifyLiveReload);
   watch("**/*.html", notifyLiveReload);
   watch("components/*", buildHTML);
@@ -117,37 +121,20 @@ gulp.task("watch", function(cb) {
   watch("js/**/*.js", minifyJS);
 });
 
-gulp.task("lint", function() {
-  return gulp
-    .src(["!js/vendor/**/*.js", "js/**/*.js"])
-    .pipe(jshint(".jshintrc"))
-    .pipe(jshint.reporter("jshint-stylish"));
+gulp.task("serve", function () {
+  var app = express();
+  app.use(express.static("."));
+  var port = 4000;
+  app.listen(port, "0.0.0.0", function () {
+    console.log("App running and listening on port", port);
+  });
+})
+
+gulp.task('server', (cb) => {
+  exec('node app.js', err => err);
 });
 
-gulp.task("watch-test", function(done) {
-  return new Server(
-    {
-      configFile: __dirname + "/karma.conf.js",
-      singleRun: false
-    },
-    done
-  ).start();
-});
-
-gulp.task("test-once", function(done) {
-  Server.start(
-    {
-      configFile: __dirname + "/karma.conf.js",
-      singleRun: true,
-      reporters: ["mocha"]
-    },
-    function(error) {
-      done(error);
-    }
-  );
-});
-
-gulp.task("copy", function() {
+gulp.task("copy", function () {
   gulp
     .src("node_modules/roboto-fontface/fonts/*{Regular,Bold}.*")
     .pipe(gulp.dest("dist/fonts"));
@@ -156,14 +143,15 @@ gulp.task("copy", function() {
     .pipe(gulp.dest("dist/fonts"));
   gulp.src("img/*").pipe(gulp.dest("dist/img"));
   gulp.src("favicon.ico").pipe(gulp.dest("dist"));
-  gulp.src("firebase.json").pipe(gulp.dest("dist"));
+  gulp.src("app.js").pipe(gulp.dest("dist"));
+  gulp.src("gulpfile.js").pipe(gulp.dest("dist"));
+  gulp.src("Dockerfile").pipe(gulp.dest("dist"));
+  gulp.src("package*.json").pipe(gulp.dest("dist"));
   gulp.src("README.md").pipe(gulp.dest("dist"));
-  gulp.src("CNAME").pipe(gulp.dest("dist"));
 
   buildHTML();
 });
 
-gulp.task("default", ["bundle", "copy", "server","express", "livereload", "watch"]);
-gulp.task("test", ["lint", "watch-test"]);
-gulp.task("testci", ["lint", "test-once"]);
+gulp.task("default", ["bundle", "copy", "server", "express", "livereload", "watch"]);
 gulp.task("build", ["clean-dist", "bundle", "copy"]);
+gulp.task("run", ["server", "serve"])

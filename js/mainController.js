@@ -58,6 +58,7 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     };
 
     $scope.user = $cookies.get('user');
+    $scope.endpoint = $cookies.get('endpoint');
     if (!$scope.user) {
       $timeout(function () {
         modalService.openLoginUser($scope);
@@ -65,7 +66,12 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     }
     $scope.saveUser = function () {
       $cookies.put('user', $scope.user)
+      $cookies.put('endpoint', $scope.endpoint);
       modalService.closeAll();
+    }
+    
+    $scope.configEndpoint = function(){
+      location.reload();
     }
     $scope.droppedEvent = function (dragEl, dropEl) {
       var drag = $('#' + dragEl);
