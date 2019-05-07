@@ -84,12 +84,10 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     $scope.saveUser = function () {
       $cookies.put('user', $scope.user)
       $cookies.put('endpoint', $scope.endpoint);
+      location.reload();
       modalService.closeAll();
     }
-    
-    $scope.configEndpoint = function(){
-      location.reload();
-    }
+
     $scope.droppedEvent = function (dragEl, dropEl) {
       var drag = $('#' + dragEl);
       var drop = $('#' + dropEl);
@@ -602,6 +600,13 @@ angular
   .module('fireideaz')
   .service('ModalService', ['ngDialog', function (ngDialog) {
     return {
+      openLoginUser: function (scope) {
+        ngDialog.open({
+          templateUrl: 'setUserName',
+          className: 'ngdialog-theme-plain',
+          scope: scope
+        });
+      },
       openAddNewColumn: function (scope) {
         ngDialog.open({
           template: 'addNewColumn',
@@ -662,13 +667,6 @@ angular
       openCardSettings: function (scope) {
         ngDialog.open({
           template: 'cardSettings',
-          className: 'ngdialog-theme-plain',
-          scope: scope
-        });
-      },
-      openLoginUser: function (scope) {
-        ngDialog.open({
-          template: 'loginUser',
           className: 'ngdialog-theme-plain',
           scope: scope
         });

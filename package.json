@@ -54,6 +54,7 @@
     "ng-file-upload": "12.2.13",
     "opencollective": "^1.0.3",
     "papaparse": "^4.2.0",
+    "roboto-fontface": "^0.10.0",
     "vanilla-emoji-picker": "^0.2.0"
   },
   "collective": {

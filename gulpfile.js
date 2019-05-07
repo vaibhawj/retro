@@ -136,7 +136,7 @@ gulp.task('server', (cb) => {
 
 gulp.task("copy", function () {
   gulp
-    .src("node_modules/roboto-fontface/fonts/*{Regular,Bold}.*")
+    .src("node_modules/roboto-fontface/fonts/roboto/*{Regular,Bold}.*")
     .pipe(gulp.dest("dist/fonts"));
   gulp
     .src("node_modules/font-awesome/fonts/*.{woff,woff2,eot,svg,ttf}")
