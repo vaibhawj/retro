@@ -67,12 +67,10 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     $scope.saveUser = function () {
       $cookies.put('user', $scope.user)
       $cookies.put('endpoint', $scope.endpoint);
+      location.reload();
       modalService.closeAll();
     }
-    
-    $scope.configEndpoint = function(){
-      location.reload();
-    }
+
     $scope.droppedEvent = function (dragEl, dropEl) {
       var drag = $('#' + dragEl);
       var drop = $('#' + dropEl);

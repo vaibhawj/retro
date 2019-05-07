@@ -4,6 +4,13 @@ angular
   .module('fireideaz')
   .service('ModalService', ['ngDialog', function (ngDialog) {
     return {
+      openLoginUser: function (scope) {
+        ngDialog.open({
+          templateUrl: 'setUserName',
+          className: 'ngdialog-theme-plain',
+          scope: scope
+        });
+      },
       openAddNewColumn: function (scope) {
         ngDialog.open({
           template: 'addNewColumn',
@@ -64,13 +71,6 @@ angular
       openCardSettings: function (scope) {
         ngDialog.open({
           template: 'cardSettings',
-          className: 'ngdialog-theme-plain',
-          scope: scope
-        });
-      },
-      openLoginUser: function (scope) {
-        ngDialog.open({
-          template: 'loginUser',
           className: 'ngdialog-theme-plain',
           scope: scope
         });

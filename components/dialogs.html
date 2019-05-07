@@ -1,4 +1,4 @@
-<script type="text/ng-template" id="loginUser">
+<script type="text/ng-template" id="setUserName">
   <h1>Your name please</h1>
   <input ng-model="$parent.user" type="text" ></input>
   <p>server endpoint:</p>
@@ -28,8 +28,6 @@
   <h1>New board</h1>
   <label for="newBoardName">Board name</label>
   <input id="newBoardName" ng-model="newBoard.name" type="text" ng-keyup="submitOnEnter($event, 'createNewBoard')"></input>
-  <label for="newBoardName">Endpoint</label>
-  <input id="newBoardName" ng-model="newBoard.endpoint" type="text"></input>
   <div class="labeled-checkbox">
     <input class="toggle-checkbox" ng-model="newBoard.text_editing_is_private" type="checkbox" ng-checked="true"></input>
     <label>Private writing during card editing</label>
