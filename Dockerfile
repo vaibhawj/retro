@@ -1,6 +1,6 @@
 FROM node:8
 
-MAINTAINER arbin 
+MAINTAINER waninlezu
 
 ADD https://github.com/waninlezu/distributed/archive/gh-pages.tar.gz /Downloads/gh-pages.tar.gz
 
@@ -17,6 +17,5 @@ WORKDIR /retro
 VOLUME /data
 
 USER retro
-
 
 CMD ["gulp" "run"]

@@ -62,7 +62,7 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     if (!$scope.user) {
       $timeout(function () {
         modalService.openLoginUser($scope);
-      })
+      },1000)
     }
     $scope.saveUser = function () {
       $cookies.put('user', $scope.user)
