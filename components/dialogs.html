@@ -50,33 +50,6 @@
   <button ng-controller="MessageCtrl" class="delete-button" ng-click="dropped(dragEl, dropEl)">Merge</button>
   <a ng-click="modalService.closeAll();">Cancel</a>
 </script>
-<script type="text/ng-template" id="importCards">
-  <h1>Import CSV</h1>
-  <span>
-    <p>1. <a class="inline-link" type="file" ngf-select="importExportService.submitImportFile($file, import, board, this)" ngf-pattern="text/csv" accept="text/csv" ngf-max-size="10KB"> Upload</a> a CSV file </p>
-    <p>File example:
-      <pre><code>
-  Went well, To improve, Action items
-  text 1, text 3, text 5
-  text 2, text 4, text 6
-      </code></pre>
-    </p>
-    <p ng-show="import.mapping.length > 0">2. Asign each column to a specific CSV column</button></p>
-    <table>
-      <tr ng-repeat="column in import.mapping track by $index">
-        <td class="align-right"><label for="column{{$index}}">{{column.name}}</label></td>
-        <td class="align-left">
-          <select id="column{{$index}}" class="import-select" ng-model="column.mapFrom">
-            <option select="selected" value="-1">Select csv column</option>
-            <option ng-repeat="importColumn in import.data[0] track by $index" value="{{$index}}">{{importColumn}}</option>
-          </select>
-        </td>
-    </table>
-    <p class="error-msg" ng-show="import.error"> {{import.error}} </p>
-    <button ng-click="importExportService.importMessages(userUid, import, messages)" ng-disabled="(import.mapping | filter: { mapFrom: '!-1' }).length == 0">Import</button>
-    <a ng-click="modalService.closeAll();">Cancel</a>
-    </span>
-</script>
 <script type="text/ng-template" id="voteSettings">
   <div class='vote-settings'>
     <h1>Vote Settings</h1>

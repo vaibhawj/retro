@@ -49,6 +49,7 @@ var bundleVendorCSS = function() {
   gulp
     .src([
       "node_modules/font-awesome/css/font-awesome.min.css",
+      "node_modules/angular-toastr/dist/angular-toastr.min.css",
       "stylesheets/vendor/*.css"
     ])
     .pipe(concatCss("vendor.css"))

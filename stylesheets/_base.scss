@@ -19,6 +19,7 @@
   url('../fonts/Roboto-Bold.svg?v=0.4.2') format('svg');
 }
 
+
 legend {
   display: none;
 }
@@ -28,6 +29,7 @@ body {
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
   color: $grey;
+  -webkit-print-color-adjust:exact;
 }
 
 .pull-right {

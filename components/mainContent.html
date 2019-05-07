@@ -28,10 +28,10 @@
           <li ng-controller="MessageCtrl" id="{{ message._id }}" enter-click class="message" ng-class="{'flip': isEditing}" ng-repeat="message in messages | filter: {type: {id: type.id}, text: filterMessage} | orderBy: getSortFields()">
             <div messageId="{{ message._id }}" x-lvl-draggable x-lvl-drop-target="true" x-on-drop="dropCardOnCard(dragEl, dropEl)" draggable="{{ !isEditing }}">
 
-              <div class="front" ng-class="{'filter': message.creating && board.text_editing_is_private}">
+              <div class="front" ng-dblclick="isEditing = true; editMessage(message)" ng-class="{'filter': message.creating && board.text_editing_is_private}">
                   <div class="message-body">
                       <div class="text" ng-bind-html="message.text | linky:'_blank'"></div>
-                      <a href="javascript:void(0)" class="pencil message-body-link" ng-click="isEditing = true; utils.focusElement(message._id); message.creating = true; patchMessage(message);" aria-label="Edit message"><i class="fa fa-pencil"></i></a>
+                      <a href="javascript:void(0)" class="pencil message-body-link" ng-click="isEditing = true; editMessage(message)" aria-label="Edit message"><i class="fa fa-pencil"></i></a>
                   </div>
                   <div ng-class="board.hideVote ? 'hide-vote-count' : 'show-vote-count'" class="votes">
                       <a class="message-body-link" ng-show="voteService.canUnvoteMessage(userId, message.$id)" href="javascript:void(0)" ng-click="voteService.unvote(userId, message.$id, message.votes)" aria-label="Unvote">

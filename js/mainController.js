@@ -1,8 +1,8 @@
 /* global EmojiPicker */
 'use strict';
 
-angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filter', '$window', 'Utils', '$rootScope', 'ModalService', 'FEATURES', '$feathers', '$timeout',
-  function ($cookies, $scope, $filter, $window, utils, $rootScope, modalService, FEATURES, $feathers, $timeout) {
+angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filter', '$window', 'Utils', '$rootScope', 'ModalService', '$feathers', '$timeout', 'toastr',
+  function ($cookies, $scope, $filter, $window, utils, $rootScope, modalService, $feathers, $timeout, toastr) {
 
     var messageService = $feathers.service('message')
     var boardService = $feathers.service('board')
@@ -45,7 +45,6 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
       name: '',
       text_editing_is_private: true
     };
-    $scope.features = FEATURES;
     $scope.searchParams = {};
     $window.location.search.substr(1).split('&').forEach(function (pair) {
       var keyValue = pair.split('=');
@@ -126,7 +125,7 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     };
 
     $scope.getSortFields = function () {
-      return $scope.sortField === 'votes' ? ['-votes', 'date_created'] :
+      return $scope.sortField === 'votes' ? ['-votes.length', 'date_created'] :
         'date_created';
     };
 
@@ -228,6 +227,12 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     function showMessage(msg) {
       alert(msg);
     }
+    $scope.editMessage = function (message) {
+      message.creating = true;
+      new EmojiPicker();
+      utils.focusElement(message._id);
+      $scope.patchMessage(message);
+    }
 
     $scope.deleteMessage = function (message) {
       if (message.user == $scope.user) {
@@ -238,10 +243,6 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
         showMessage('permission denied')
       }
     };
-
-    function addMessageCallback(message) {
-
-    }
 
     $scope.addNewMessage = function (type) {
       messageService.create({
@@ -291,13 +292,21 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
       }
     };
 
-    $scope.toggerVote = function(message){
-      if(message.votes.indexOf($scope.user)==-1){
-        messageService.patch(message._id, {$push: { votes: $scope.user } }).catch((error) => {
+    $scope.toggerVote = function (message) {
+      if (message.votes.indexOf($scope.user) == -1) {
+        messageService.patch(message._id, {
+          $push: {
+            votes: $scope.user
+          }
+        }).catch((error) => {
           console.log(error);
         })
-      }else{
-        messageService.patch(message._id, {$pull: { votes: $scope.user } }).catch((error) => {
+      } else {
+        messageService.patch(message._id, {
+          $pull: {
+            votes: $scope.user
+          }
+        }).catch((error) => {
           console.log(error);
         })
       }
