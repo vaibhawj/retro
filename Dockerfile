@@ -1,4 +1,4 @@
-FROM node:boron
+FROM node:8
 
 MAINTAINER arbin 
 
@@ -14,7 +14,9 @@ RUN tar -xzf /Downloads/gh-pages.tar.gz && \
 EXPOSE 4000 3030
 
 WORKDIR /retro
+VOLUME /data
 
 USER retro
 
-CMD ["gulp run"]
+
+CMD ["gulp" "run"]
