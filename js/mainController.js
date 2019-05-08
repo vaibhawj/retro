@@ -58,16 +58,14 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     };
 
     $scope.user = $cookies.get('user');
-    $scope.endpoint = $cookies.get('endpoint');
-    if (!$scope.user) {
-      $timeout(function () {
+    $timeout(function(){
+      if(!$scope.user){
         modalService.openLoginUser($scope);
-      },3000)
-    }
+      }
+    })
+
     $scope.saveUser = function () {
-      $cookies.put('user', $scope.user)
-      $cookies.put('endpoint', $scope.endpoint);
-      location.reload();
+      $cookies.put('user', $scope.user);
       modalService.closeAll();
     }
 
