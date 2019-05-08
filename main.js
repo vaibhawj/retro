@@ -1,7 +1,11 @@
 angular.module('fireideaz', ['ngCookies','ngFeathers','ngDialog','lvl.directives.dragdrop','ngSanitize','ngAria','ngFileUpload','ngAnimate', 'toastr'])
 .config(function ($feathersProvider) {
-  
-  $feathersProvider.setEndpoint('http://localhost:3030')
+  var $cookies;
+  angular.injector(['ngCookies']).invoke(['$cookies', function(_$cookies_) {
+    $cookies = _$cookies_;
+  }]);
+  var endpoint = $cookies.get('endpoint') || 'http://localhost:3030';
+  $feathersProvider.setEndpoint(endpoint);
   // You can optionally provide additional opts for socket.io-client
   $feathersProvider.setSocketOpts({
     path: '/ws/'
@@ -79,6 +83,12 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     $scope.saveUser = function () {
       $cookies.put('user', $scope.user);
       modalService.closeAll();
+    }
+
+    $scope.endpoint = $cookies.get('endpoint');
+    $scope.saveEndpoint =function(){
+      $cookies.put('endpoint', $scope.endpoint);
+      location.reload();
     }
 
     $scope.droppedEvent = function (dragEl, dropEl) {
@@ -465,6 +475,88 @@ angular
 
 'use strict';
 
+angular
+  .module('fireideaz')
+  .service('ModalService', ['ngDialog', function (ngDialog) {
+    return {
+      openLoginUser: function (scope) {
+        ngDialog.open({
+          template: 'components/setUserName.html',
+          className: 'ngdialog-theme-plain',
+          scope: scope
+        });
+      },
+      openAddNewColumn: function (scope) {
+        ngDialog.open({
+          template: 'addNewColumn',
+          className: 'ngdialog-theme-plain',
+          scope: scope
+        });
+      },
+      openAddNewBoard: function (scope) {
+        ngDialog.open({
+          template: 'addNewBoard',
+          className: 'ngdialog-theme-plain',
+          scope: scope
+        });
+      },
+      openDeleteCard: function (scope) {
+        ngDialog.open({
+          template: 'deleteCard',
+          className: 'ngdialog-theme-plain',
+          scope: scope
+        });
+      },
+      openDeleteColumn: function (scope) {
+        ngDialog.open({
+          template: 'deleteColumn',
+          className: 'ngdialog-theme-plain',
+          scope: scope
+        });
+      },
+
+      openMergeCards: function (scope) {
+        ngDialog.open({
+          template: 'mergeCards',
+          className: 'ngdialog-theme-plain',
+          scope: scope
+        });
+      },
+      openDeleteBoard: function (scope) {
+        ngDialog.open({
+          template: 'deleteBoard',
+          className: 'ngdialog-theme-plain danger',
+          scope: scope
+        });
+      },
+      openDeleteCards: function (scope) {
+        ngDialog.open({
+          template: 'deleteCards',
+          className: 'ngdialog-theme-plain danger',
+          scope: scope
+        });
+      },
+      openVoteSettings: function (scope) {
+        ngDialog.open({
+          template: 'voteSettings',
+          className: 'ngdialog-theme-plain',
+          scope: scope
+        });
+      },
+      openCardSettings: function (scope) {
+        ngDialog.open({
+          template: 'cardSettings',
+          className: 'ngdialog-theme-plain',
+          scope: scope
+        });
+      },
+      closeAll: function () {
+        ngDialog.closeAll();
+      }
+    };
+  }]);
+'use strict';
+
 angular.module('fireideaz').directive('about', [function() {
     return {
       templateUrl : 'components/about.html'
@@ -586,86 +678,3 @@ angular.module('fireideaz').directive('spinner', [function() {
     };
   }]
 );
-
-'use strict';
-
-angular
-  .module('fireideaz')
-  .service('ModalService', ['ngDialog', function (ngDialog) {
-    return {
-      openLoginUser: function (scope) {
-        ngDialog.open({
-          template: 'components/setUserName.html',
-          className: 'ngdialog-theme-plain',
-          scope: scope
-        });
-      },
-      openAddNewColumn: function (scope) {
-        ngDialog.open({
-          template: 'addNewColumn',
-          className: 'ngdialog-theme-plain',
-          scope: scope
-        });
-      },
-      openAddNewBoard: function (scope) {
-        ngDialog.open({
-          template: 'addNewBoard',
-          className: 'ngdialog-theme-plain',
-          scope: scope
-        });
-      },
-      openDeleteCard: function (scope) {
-        ngDialog.open({
-          template: 'deleteCard',
-          className: 'ngdialog-theme-plain',
-          scope: scope
-        });
-      },
-      openDeleteColumn: function (scope) {
-        ngDialog.open({
-          template: 'deleteColumn',
-          className: 'ngdialog-theme-plain',
-          scope: scope
-        });
-      },
-
-      openMergeCards: function (scope) {
-        ngDialog.open({
-          template: 'mergeCards',
-          className: 'ngdialog-theme-plain',
-          scope: scope
-        });
-      },
-      openDeleteBoard: function (scope) {
-        ngDialog.open({
-          template: 'deleteBoard',
-          className: 'ngdialog-theme-plain danger',
-          scope: scope
-        });
-      },
-      openDeleteCards: function (scope) {
-        ngDialog.open({
-          template: 'deleteCards',
-          className: 'ngdialog-theme-plain danger',
-          scope: scope
-        });
-      },
-      openVoteSettings: function (scope) {
-        ngDialog.open({
-          template: 'voteSettings',
-          className: 'ngdialog-theme-plain',
-          scope: scope
-        });
-      },
-      openCardSettings: function (scope) {
-        ngDialog.open({
-          template: 'cardSettings',
-          className: 'ngdialog-theme-plain',
-          scope: scope
-        });
-      },
-      closeAll: function () {
-        ngDialog.closeAll();
-      }
-    };
-  }]);
