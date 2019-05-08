@@ -16,9 +16,8 @@
   <input class="filter-message" placeholder="Filter your cards" ng-model="filterMessage" aria-label="Filter your cards" />
   
   <span class="pull-right menu-controls">
-    <a ng-show="user" class="header-icon" href="javascript:void(0)" ><i class="fa fa-user"></i> <span class="header-icon-desc">{{user}}</span></a>
+    <a ng-show="user" class="header-icon" ng-click="modalService.openLoginUser(this)" ><i class="fa fa-user"></i> <span class="header-icon-desc">{{user}}</span></a>
     <a class="header-icon" href="javascript:void(0)" ng-click="sidebarOpened = true;" aria-label="Open settings sidebar"><i class="fa fa-gear"></i> <span class="header-icon-desc">settings</span></a>
-    <button ng-hide="user" class="new-column" ng-click="modalService.openLoginUser(this)">Login</button>    
     <button class="pull-right new-column" ng-show="board.columns.length < 6" ng-click="modalService.openAddNewColumn(this)">New column</button>
   </span>
 </div>

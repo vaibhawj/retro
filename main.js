@@ -1,12 +1,7 @@
 angular.module('fireideaz', ['ngCookies','ngFeathers','ngDialog','lvl.directives.dragdrop','ngSanitize','ngAria','ngFileUpload','ngAnimate', 'toastr'])
 .config(function ($feathersProvider) {
-  var $cookies;
-  angular.injector(['ngCookies']).invoke(['$cookies', function(_$cookies_) {
-    $cookies = _$cookies_;
-  }]);
-
-  var endpoint = $cookies.get('endpoint') || 'http://localhost:3030';
-  $feathersProvider.setEndpoint(endpoint)
+  
+  $feathersProvider.setEndpoint('http://localhost:3030')
   // You can optionally provide additional opts for socket.io-client
   $feathersProvider.setSocketOpts({
     path: '/ws/'
@@ -75,16 +70,14 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     };
 
     $scope.user = $cookies.get('user');
-    $scope.endpoint = $cookies.get('endpoint');
-    if (!$scope.user) {
-      $timeout(function () {
+    $timeout(function(){
+      if(!$scope.user){
         modalService.openLoginUser($scope);
-      })
-    }
+      }
+    })
+
     $scope.saveUser = function () {
-      $cookies.put('user', $scope.user)
-      $cookies.put('endpoint', $scope.endpoint);
-      location.reload();
+      $cookies.put('user', $scope.user);
       modalService.closeAll();
     }
 
@@ -602,7 +595,7 @@ angular
     return {
       openLoginUser: function (scope) {
         ngDialog.open({
-          templateUrl: 'setUserName',
+          template: 'components/setUserName.html',
           className: 'ngdialog-theme-plain',
           scope: scope
         });

@@ -2,7 +2,6 @@ var gulp = require("gulp"),
   clean = require("gulp-clean"),
   concat = require("gulp-concat"),
   gp_rename = require("gulp-rename"),
-  uglify = require("gulp-uglify"),
   concatCss = require("gulp-concat-css"),
   uglifycss = require("gulp-uglifycss"),
   sass = require("gulp-sass"),
@@ -10,9 +9,9 @@ var gulp = require("gulp"),
   express = require("express"),
   path = require("path"),
   watch = require("gulp-watch"),
+  replace = require('gulp-replace'),
+  runSequence = require('run-sequence'),
   autoprefixer = require("gulp-autoprefixer");
-  
-var exec = require('child_process').exec;
 
 gulp.task("express", function () {
   var app = express();
@@ -122,17 +121,21 @@ gulp.task("watch", function (cb) {
 });
 
 gulp.task("serve", function () {
+  if (process.env.endpoint) {
+    gulp.src('main.js', {
+        base: './'
+      })
+      .pipe(replace('http://localhost:3030', process.env.endpoint))
+      .pipe(gulp.dest('./'));
+  }
+
   var app = express();
-  app.use(express.static("."));
+  app.use(express.static(__dirname));
   var port = 4000;
   app.listen(port, "0.0.0.0", function () {
     console.log("App running and listening on port", port);
   });
 })
-
-gulp.task('server', (cb) => {
-  exec('node app.js', err => err);
-});
 
 gulp.task("copy", function () {
   gulp
@@ -143,15 +146,16 @@ gulp.task("copy", function () {
     .pipe(gulp.dest("dist/fonts"));
   gulp.src("img/*").pipe(gulp.dest("dist/img"));
   gulp.src("favicon.ico").pipe(gulp.dest("dist"));
-  gulp.src("app.js").pipe(gulp.dest("dist"));
+  gulp.src("server.js").pipe(gulp.dest("dist"));
   gulp.src("gulpfile.js").pipe(gulp.dest("dist"));
-  gulp.src("Dockerfile").pipe(gulp.dest("dist"));
   gulp.src("package*.json").pipe(gulp.dest("dist"));
-  gulp.src("README.md").pipe(gulp.dest("dist"));
 
   buildHTML();
 });
 
-gulp.task("default", ["bundle", "copy", "server", "express", "livereload", "watch"]);
-gulp.task("build", ["clean-dist", "bundle", "copy"]);
-gulp.task("run", ["server", "serve"])
+gulp.task("default", function () {
+  runSequence('clean-dist', 'bundle', 'copy', "express", "livereload", "watch");
+});
+gulp.task("build", function () {
+  runSequence('clean-dist', 'bundle', 'copy');
+});
