@@ -144,8 +144,9 @@ gulp.task("copy", function () {
   gulp.src("img/*").pipe(gulp.dest("dist/img"));
   gulp.src("favicon.ico").pipe(gulp.dest("dist"));
   gulp.src("server.js").pipe(gulp.dest("dist"));
-  gulp.src("gulpfile.js").pipe(gulp.dest("dist"));
-  gulp.src("package*.json").pipe(gulp.dest("dist"));
+  gulp.src("gulp.server.js") .pipe(gp_rename("gulpfile.js")).pipe(gulp.dest("dist"));
+  gulp.src("package.server.json") .pipe(gp_rename("package.json")).pipe(gulp.dest("dist"));
+  gulp.src("Dockerfile").pipe(gulp.dest("dist"));
 
   buildHTML();
 });

@@ -5,7 +5,7 @@
   "private": false,
   "main": "server.js",
   "scripts": {
-    "deploy": "./deploy.sh",
+    "deploy": "gulp build && ./deploy.sh",
     "start": "node server.js& gulp serve"
   },
   "devDependencies": {
