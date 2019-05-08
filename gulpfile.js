@@ -82,10 +82,7 @@ var bundleVendorJS = function () {
       "js/vendor/*.js",
       "node_modules/ng-dialog/**/ngDialog*.min.js",
       "node_modules/ng-file-upload/**/ng-file-upload-all.min.js",
-      "node_modules/papaparse/papaparse.min.js",
-      "node_modules/clipboard/dist/clipboard.min.js",
-      "node_modules/vanilla-emoji-picker/dist/emojiPicker.min.js",
-      "node_modules/jspdf/dist/jspdf.min.js"
+      "node_modules/vanilla-emoji-picker/dist/emojiPicker.min.js"
     ])
     .pipe(concat("vendor.js"))
     .pipe(gulp.dest("dist"));
@@ -148,6 +145,7 @@ gulp.task("copy", function () {
   gulp.src("favicon.ico").pipe(gulp.dest("dist"));
   gulp.src("server.js").pipe(gulp.dest("dist"));
   gulp.src("gulpfile.js").pipe(gulp.dest("dist"));
+  gulp.src("Dockerfile").pipe(gulp.dest("dist"));
   gulp.src("package*.json").pipe(gulp.dest("dist"));
 
   buildHTML();
