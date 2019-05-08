@@ -1,4 +1,4 @@
-FROM node:10
+FROM node:8
 
 ADD https://github.com/waninlezu/distributed/archive/gh-pages.tar.gz /Downloads/gh-pages.tar.gz
 
@@ -11,7 +11,7 @@ RUN tar -xzf /Downloads/gh-pages.tar.gz && \
     chown -R retro:retro /retro
 
 WORKDIR /retro
-VOLUME /data
+VOLUME /retro/data
 
 USER retro
 
