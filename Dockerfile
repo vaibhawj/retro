@@ -16,4 +16,4 @@ VOLUME /data
 USER retro
 
 EXPOSE 4000 3030
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "start" ]
