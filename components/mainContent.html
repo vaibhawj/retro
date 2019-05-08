@@ -54,7 +54,6 @@
               <div class="back">
                   <div class="message-body">
                       <div class="editing">
-                          <!-- ng-blur="patchMessage(message)"  -->
                           <textarea data-emoji-picker="true" ng-model="message.text" aria-label="Message text entry"></textarea>
                           <button ng-click="isEditing = false;message.creating = false; patchMessage(message);">DONE</button>
                           <a class="delete-link message-body-link" href="javascript:void(0)" ng-click="modalService.openDeleteCard(this)" aria-label="Delete message"><i class="fa fa-trash"></i></a>

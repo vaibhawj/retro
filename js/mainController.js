@@ -69,6 +69,12 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
       modalService.closeAll();
     }
 
+    $scope.endpoint = $cookies.get('endpoint');
+    $scope.saveEndpoint =function(){
+      $cookies.put('endpoint', $scope.endpoint);
+      location.reload();
+    }
+
     $scope.droppedEvent = function (dragEl, dropEl) {
       var drag = $('#' + dragEl);
       var drop = $('#' + dropEl);
