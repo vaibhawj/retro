@@ -1,59 +1,25 @@
 {
-  "name": "Fireideaz",
+  "name": "Funretro",
   "description": "Retrospective tool",
   "version": "0.0.1",
   "private": false,
   "main": "server.js",
   "scripts": {
-    "deploy": "./deploy.sh",
     "start": "node server.js& gulp serve"
   },
-  "devDependencies": {
+  "dependencies": {
     "@feathersjs/errors": "^3.3.6",
     "@feathersjs/express": "^1.3.1",
     "@feathersjs/feathers": "^3.3.1",
     "@feathersjs/socketio": "^3.2.9",
-    "angular-mocks": "^1.5.5",
-    "chai": "^3.5.0",
-    "connect-livereload": "latest",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "feathers-nedb": "^4.0.1",
-    "gh-pages": "^0.12.0",
     "gulp": "^3.9.1",
-    "gulp-autoprefixer": "latest",
-    "gulp-clean": "^0.3.2",
-    "gulp-concat": "latest",
-    "gulp-concat-css": "latest",
-    "gulp-rename": "latest",
     "gulp-replace": "^1.0.0",
-    "gulp-sass": "^2.0.4",
-    "gulp-uglifycss": "latest",
-    "gulp-watch": "latest",
-    "mocha": "^3.2.0",
     "nan": "^2.13.2",
     "natives": "^1.1.6",
-    "nedb": "^1.8.0",
-    "run-sequence": "^2.2.1",
-    "sinon": "1.17.6",
-    "stylelint": "latest",
-    "tiny-lr": "latest"
-  },
-  "dependencies": {
-    "angular": "^1.4.9",
-    "angular-animate": "^1.7.8",
-    "angular-aria": "^1.5.5",
-    "angular-cookies": "^1.7.8",
-    "angular-sanitize": "^1.5.5",
-    "angular-toastr": "^2.1.1",
-    "angularfire": "^2.3.0",
-    "core-js": "^2.4.1",
-    "font-awesome": "^4.6.1",
-    "ng-dialog": "^0.6.0",
-    "ng-feathers": "^1.7.2",
-    "ng-file-upload": "12.2.13",
-    "roboto-fontface": "^0.10.0",
-    "vanilla-emoji-picker": "^0.2.0"
+    "nedb": "^1.8.0"
   },
   "engines": {
     "node": ">=8.6.0"
