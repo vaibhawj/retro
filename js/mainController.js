@@ -341,15 +341,6 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
       }
     };
 
-    $scope.cleanImportData = function () {
-      $scope.import.data = [];
-      $scope.import.mapping = [];
-      $scope.import.error = '';
-    };
-
-    /* globals Clipboard */
-    new Clipboard('.import-btn');
-
     function reloadBoard() {
       $scope.loading = true;
       $scope.boardId = $window.location.hash.substring(1) || '';
