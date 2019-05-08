@@ -6,7 +6,7 @@ RUN tar -xzf /Downloads/gh-pages.tar.gz && \
     mv /distributed-gh-pages /retro && \
     cd /retro && \
     npm i -g gulp && \
-    npm i --only=dev && \
+    npm i --ignore-scripts && \
     npm cache clean --force && \
     adduser --disabled-password --gecos "retro" --home /retro --no-create-home retro && \
     chown -R retro:retro /retro
