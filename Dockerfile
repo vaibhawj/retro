@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:10-alpine
 
 ADD https://github.com/waninlezu/distributed/archive/gh-pages.tar.gz /Downloads/gh-pages.tar.gz
 
