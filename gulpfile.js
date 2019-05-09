@@ -147,6 +147,7 @@ gulp.task("copy", function () {
   gulp.src("gulp.server.js") .pipe(gp_rename("gulpfile.js")).pipe(gulp.dest("dist"));
   gulp.src("package.server.json") .pipe(gp_rename("package.json")).pipe(gulp.dest("dist"));
   gulp.src("Dockerfile").pipe(gulp.dest("dist"));
+  gulp.src("README.md").pipe(gulp.dest("dist"));
 
   buildHTML();
 });
