@@ -25,9 +25,11 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
       $scope.$apply();
       console.log('msg removed:', msg);
     }).on('created', function (msg) {
-      $scope.messages.push(msg);
-      $scope.$apply();
-      console.log('msg created:', msg);
+      if (msg.boardId == $scope.board._id) {
+        $scope.messages.push(msg);
+        $scope.$apply();
+        console.log('msg created:', msg);
+      }
     })
 
     boardService.on('patched', function (board) {
@@ -58,8 +60,8 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     };
 
     $scope.user = $cookies.get('user');
-    $timeout(function(){
-      if(!$scope.user){
+    $timeout(function () {
+      if (!$scope.user) {
         modalService.openLoginUser($scope);
       }
     })
@@ -70,7 +72,7 @@ angular.module('fireideaz').controller('MainCtrl', ['$cookies', '$scope', '$filt
     }
 
     $scope.endpoint = $cookies.get('endpoint');
-    $scope.saveEndpoint =function(){
+    $scope.saveEndpoint = function () {
       $cookies.put('endpoint', $scope.endpoint);
       location.reload();
     }
