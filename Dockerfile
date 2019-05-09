@@ -10,7 +10,8 @@ RUN tar -xzf /Downloads/gh-pages.tar.gz && \
     npm cache clean --force && \
     adduser --disabled-password --gecos "retro" --home /retro --no-create-home retro && \
     mkdir -p /retro/data && \
-    chown -R 1000:1000 /retro
+    chown -R retro:retro /retro
+
 WORKDIR /retro
 VOLUME /retro/data
 
