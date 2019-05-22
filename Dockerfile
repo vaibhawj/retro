@@ -1,9 +1,9 @@
 FROM node:10-alpine
 
-ADD https://github.com/waninlezu/distributed/archive/gh-pages.tar.gz /Downloads/gh-pages.tar.gz
+ADD https://github.com/waninlezu/retro/archive/gh-pages.tar.gz /Downloads/gh-pages.tar.gz
 
 RUN tar -xzf /Downloads/gh-pages.tar.gz && \
-    mv /distributed-gh-pages /retro && \
+    mv /retro-gh-pages /retro && \
     cd /retro && \
     npm i -g gulp && \
     npm i --ignore-scripts && \
