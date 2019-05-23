@@ -12,4 +12,4 @@ set enviroument: endpoint=http://DockerHostIP:3030
 
 open browser: http://DockerHostIP:4000
 
-online demo: http://waninlezu.com:4000/
+online demo: http://nas.waninlezu.com:4000/
