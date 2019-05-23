@@ -50,6 +50,7 @@
     <h1>Vote Settings</h1>
     <button class="hide-vote" ng-click="board.hideVote = !board.hideVote; patchBoard()"><span ng-if="!board.hideVote">Hide vote counts</span><span ng-if="board.hideVote">Show vote counts</span></button>
     <button class="hide-vote" ng-click="board.hidevoter = !board.hidevoter; patchBoard()"><span ng-if="!board.hidevoter">Hide voter</span><span ng-if="board.hidevoter">Show voters</span></button>
+    <button class="hide-vote" ng-click="board.hideAuthor = !board.hideAuthor; patchBoard()"><span ng-if="!board.hideAuthor">Hide author</span><span ng-if="board.hideAuthor">Show author</span></button>
   </div>
 </script>
 <script type="text/ng-template" id="cardSettings">
