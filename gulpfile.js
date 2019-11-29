@@ -43,11 +43,11 @@ gulp.task("livereload", function () {
 
 var buildHTML = function () {
   gulp.src("index.html").pipe(gulp.dest("dist"));
-  gulp.src("components/*").pipe(gulp.dest("dist/components"));
+  return gulp.src("components/*").pipe(gulp.dest("dist/components"));
 };
 
-var bundleVendorCSS = function () {
-  gulp
+gulp.task("bundleVendorCSS", function () {
+ return gulp
     .src([
       "node_modules/font-awesome/css/font-awesome.min.css",
       "node_modules/angular-toastr/dist/angular-toastr.min.css",
@@ -57,20 +57,20 @@ var bundleVendorCSS = function () {
     .pipe(gulp.dest("dist/css"))
     .pipe(uglifycss())
     .pipe(gulp.dest("dist/css"));
-};
+});
 
-var processSass = function () {
-  gulp
+gulp.task("processSass", function () {
+  return gulp
     .src(["stylesheets/main.scss"])
     .pipe(sass().on("error", sass.logError))
     .pipe(gp_rename("main.css"))
     .pipe(autoprefixer())
     .pipe(uglifycss())
     .pipe(gulp.dest("dist/css"));
-};
+});
 
-var bundleVendorJS = function () {
-  gulp
+gulp.task("bundleVendorJS", function () {
+  return gulp
     .src([
       "js/vendor/jquery-3.2.1.min.js",
       "node_modules/angular/angular.min.js",
@@ -86,14 +86,14 @@ var bundleVendorJS = function () {
     ])
     .pipe(concat("vendor.js"))
     .pipe(gulp.dest("dist"));
-};
+});
 
-var minifyJS = function () {
-  gulp
+gulp.task("minifyJS", function () {
+ return gulp
     .src(["js/*.js", "js/**/*.js", "!js/vendor/*.js"])
     .pipe(concat("main.js"))
     .pipe(gulp.dest("dist"));
-};
+});
 
 gulp.task("clean-dist", function () {
   return gulp.src("dist/*", {
@@ -101,12 +101,7 @@ gulp.task("clean-dist", function () {
   }).pipe(clean());
 });
 
-gulp.task("bundle", function () {
-  bundleVendorCSS();
-  bundleVendorJS();
-  processSass();
-  minifyJS();
-});
+gulp.task("bundle", gulp.series('bundleVendorCSS','bundleVendorJS','processSass','minifyJS'));
 
 gulp.task("watch", function (cb) {
   watch("dist/*", notifyLiveReload);
@@ -149,12 +144,8 @@ gulp.task("copy", function () {
   gulp.src("Dockerfile").pipe(gulp.dest("dist"));
   gulp.src("README.md").pipe(gulp.dest("dist"));
 
-  buildHTML();
+  return buildHTML();
 });
 
-gulp.task("default", function () {
-  runSequence('clean-dist', 'bundle', 'copy', "express", "livereload", "watch");
-});
-gulp.task("build", function () {
-  runSequence('clean-dist', 'bundle', 'copy');
-});
+gulp.task("default",gulp.series('clean-dist', 'bundle', 'copy', "express", "livereload", "watch"));
+gulp.task("build",gulp.series('clean-dist', 'bundle', 'copy'));
