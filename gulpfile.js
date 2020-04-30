@@ -122,9 +122,9 @@ gulp.task("serve", function () {
   }
 
   var app = express();
-  app.use(express.static(__dirname));
+  app.use(express.static(__dirname + "/dist"));
   var port = 4000;
-  app.listen(port, "0.0.0.0", function () {
+  app.listen(port, function () {
     console.log("App running and listening on port", port);
   });
 })

@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "deploy": "gulp build && ./deploy.sh",
-    "start": "node server.js& gulp serve"
+    "start": "node server.js & gulp serve"
   },
   "devDependencies": {
     "@feathersjs/errors": "^3.3.6",
